@@ -1,0 +1,79 @@
+{
+  "schema": "cac-funding-input-manifest-1",
+  "repository": "supervik/historical-funding-rates-fetcher",
+  "commit": "66a085bc68147df2dd3360a25ac6e9f38e7077b5",
+  "files": [
+    {
+      "path": "data/BTC-USDT/BTC-USDT_binance_2020-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "b7c2da7886b170ed109f1d377a5e8ea3bcd6da30",
+      "sha256": "c03444292619e1891dbf9cfb5f1515440b35198a29958793d52b33d2930b4a70",
+      "bytes": 193467
+    },
+    {
+      "path": "data/BTC-USDT/BTC-USDT_bybit_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "adab01ab136d3da18d7195d67c3ff2c3abe184bb",
+      "sha256": "f970dd758ebff40c44bf3259708c72c174d4af570379a91ff460c55711dfea3e",
+      "bytes": 125698
+    },
+    {
+      "path": "data/BTC-USDT/BTC-USDT_gate_2020-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "88bac86954c7fb66645d3801fbad2cd4b7ff83bc",
+      "sha256": "eac7e68943c0b5740259f9c5ef909a07d8041c23bcfe73ab96655383a48816e5",
+      "bytes": 157891
+    },
+    {
+      "path": "data/BTC-USDT/BTC-USDT_htx_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "caf86939898cb4e668764d8d730ed6e2289cfe26",
+      "sha256": "ee601f4b725fc16a5cf2bce0f48afe2090a6adff53a9a8707662097a85fca510",
+      "bytes": 139746
+    },
+    {
+      "path": "data/BTC-USDT/BTC-USDT_kucoin_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "fa789ba8aaed7ecb07f7d0c3aa58c266d3cad03b",
+      "sha256": "583807bf80adb3eb95a870a1d8b623888706cfeab59b66bedbeeb78eb3b258f8",
+      "bytes": 120825
+    },
+    {
+      "path": "data/BTC-USDT/BTC-USDT_mexc_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "37969bbb590cd233b5d240d75d1930a646c260ac",
+      "sha256": "f115811bf5f33ff6355f01e89b66aca9e675f1a387bf17af01e74a87e7be410a",
+      "bytes": 121600
+    },
+    {
+      "path": "data/ETH-USDT/ETH-USDT_binance_2020-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "abf33438b4a6ecd53021aa3d69cfc0853730f972",
+      "sha256": "14daf901f3a48d4d912b450d8f494f3e2e7e4997b512c2b540f46638237845dc",
+      "bytes": 193425
+    },
+    {
+      "path": "data/ETH-USDT/ETH-USDT_bybit_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "26fea30186de4126b9534f4966797e576c319b67",
+      "sha256": "e9e17ed857fc4ce80e128f2f8674600b7f912e5d2e4414e9dc35db7d8d79f770",
+      "bytes": 125356
+    },
+    {
+      "path": "data/ETH-USDT/ETH-USDT_gate_2020-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "db85e9fde0b44fbb3c9da5d97ecbebf53e40bcd5",
+      "sha256": "660ce27ea0f70547742d867d117f7a6feb039d5f6a02098a3245d74f0afad89a",
+      "bytes": 157649
+    },
+    {
+      "path": "data/ETH-USDT/ETH-USDT_htx_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "33c6a0a60b9a13dfd92d392ed1aa992958285314",
+      "sha256": "ee447b60d6a5a0d29986c36f5f8e5c56045a65f80a0029a164e6270a5e8fc82b",
+      "bytes": 140259
+    },
+    {
+      "path": "data/ETH-USDT/ETH-USDT_kucoin_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "0702e92897a71c4ea30aabd88b834feb4fecbd77",
+      "sha256": "11dbe99a7f961135edc31f76b94a499449b47be80a75a24a10170c321c487139",
+      "bytes": 121358
+    },
+    {
+      "path": "data/ETH-USDT/ETH-USDT_mexc_2021-01-01_2024-01-01_funding_history.csv",
+      "git_sha1": "57d7908d2347a80f05bd9254d3b59062519763f8",
+      "sha256": "ce3656653cda4903987cd65c1635bb04a1c0c1baf63228080b34663b652eeb57",
+      "bytes": 121484
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scope": "Terminal Gaussian tests only; no empirical backtest or sequential-capacity optimizer.",
+  "critical_A": 8.563847350667979,
+  "template_correlation": 0.6183098834814216,
+  "nonordered_hermite_evaluations": [
+    {
+      "nodes": 64,
+      "power": 0.8655488925819663,
+      "size": 0.05000000000000008,
+      "log_threshold": 0.7279395723318478
+    },
+    {
+      "nodes": 128,
+      "power": 0.8655488924403552,
+      "size": 0.050000000000000044,
+      "log_threshold": 0.7279395723570153
+    },
+    {
+      "nodes": 256,
+      "power": 0.865548892440372,
+      "size": 0.05000000000000008,
+      "log_threshold": 0.7279395723570139
+    }
+  ],
+  "nonordered_robust_critical_A": 9.650042179744306,
+  "difference_from_adaptive_quadrature_power": 1.2212453270876722e-15,
+  "difference_from_adaptive_quadrature_critical_A": -8.535749884686084e-11,
+  "ordered_fixed_amplitude_members": [
+    {
+      "decay": 0.2,
+      "amplitude": 5.852810391023916,
+      "least_template_test_power": 0.9998814447078203
+    },
+    {
+      "decay": 0.6,
+      "amplitude": 5.852810391023916,
+      "least_template_test_power": 0.9978636778088991
+    },
+    {
+      "decay": 1.0,
+      "amplitude": 5.852810391023916,
+      "least_template_test_power": 0.987996549266933
+    },
+    {
+      "decay": 2.0,
+      "amplitude": 5.852810391023916,
+      "least_template_test_power": 0.8999999999999998
+    }
+  ],
+  "all_checks_passed": true,
+  "numerical_status": "Floating-point quadrature agreement; not interval arithmetic."
+}

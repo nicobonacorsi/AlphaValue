@@ -1,0 +1,12 @@
+{
+  "files": {
+    "manuscript_source/fig_nearcritical.pdf": "e0f38eabfe6fb1e2a74266ea5bada57519dd26da426d0438065aa1e9886117ac",
+    "docs/assets/near_critical.svg": "373e2882c249aee911afe074c5be79b20bb8855869d5557fb11f6a72580a3ae6",
+    "manuscript_source/fig_survival_frontier.pdf": "14dc2ab742bab1e334a0b02150b900929509f41b6c9d1171d5ac9747c02a98a9",
+    "docs/assets/survival_frontier.svg": "73e1a7ad3d0f495a25e530fd534106d4ffec8d8226e04260485710b4ee035345",
+    "manuscript_source/fig_equilibrium_competition.pdf": "eaed7dbf5001a83f746758dd6d447c3b7963859d4fbb2c23bf21ab6dc6188686",
+    "docs/assets/equilibrium_competition.svg": "0be6022297aaa78029166c7fb73e20210667a054506ba9bbbaf6936b4fe9c864",
+    "manuscript_source/fig_lifetime_benchmark.pdf": "c09c83c2b473070d4f502c015ec234ca0a332355858d625e0e24521a9b24bd2f",
+    "docs/assets/lifetime_benchmark.svg": "3f94737786a742313cb00dcb3eaa1a35140f506a093dab33907b5adac4a72ea9"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "release_version": "1.5.0",
+  "software": {
+    "status": "PASS",
+    "release_version": "1.5.0",
+    "platform": "linux",
+    "installation": "fresh isolated virtual environment; editable public package",
+    "command": "python reproduce/run.py",
+    "tests_passed": 154,
+    "tests_failed": 0,
+    "tests_errored": 0,
+    "tests_skipped": 0,
+    "source_files_verified": 34,
+    "source_manifest_sha256": "3e2449b67c831c21a4938f4e7090562829a151d7dc1898f71cf1b81e65e52d8a"
+  },
+  "paper": {
+    "status": "PASS",
+    "pages": 36,
+    "abstract_words": 104,
+    "sha256": "5a84c66f2d26eb0cc7811572f3b3359af0bb9c677e3d66e58ae4906704481478",
+    "source_sha256": "285b60f3bca5151e6c32579a3910433499ec690d06e2acc7fb1f2aee946c546a",
+    "successful_pdflatex_passes": 3,
+    "unresolved_references": 0,
+    "overfull_boxes": 0,
+    "visual_pages_reviewed": 36,
+    "creation_and_modification_dates_absent": true,
+    "normal_notation_consistent": true,
+    "physical_reward_occurrences": 0,
+    "nonblocking_notes": [
+      "One underfull bibliography paragraph; rendered text remains legible."
+    ],
+    "scope": "Compiled manuscript, source references, updated empirical estimates, metadata and visual layout verified."
+  },
+  "site": {
+    "status": "PASS",
+    "checked_viewport_widths": [
+      1440,
+      390
+    ],
+    "horizontal_overflow": false,
+    "images_loaded": true,
+    "javascript_errors": 0,
+    "calculator_default_CR": "0.55",
+    "calculator_eight_year_metrics": [
+      "CR1.10",
+      "information11.54 / 10.45 nats"
+    ],
+    "calculator_example_years": 7.24,
+    "chart_font_family": "Times New Roman",
+    "curve_color": "#C8102E"
+  },
+  "scientific_scope": {
+    "primary_contribution": "mathematical_theory",
+    "funding_illustration": "descriptive",
+    "confirmatory_trading_profit_claim": false
+  },
+  "figures": {
+    "status": "PASS",
+    "count": 4,
+    "formats": [
+      "PDF",
+      "SVG"
+    ],
+    "generator_sha256": "03990ceab0adacf2b493aca7af83b0a9be8a9927d57d2271a33b0406a7a5ff2e",
+    "font_family": "Times New Roman",
+    "all_text_fonts_embedded": true,
+    "portable_rendering": {
+      "status": "PASS",
+      "font_family": "STIXGeneral",
+      "mathtext_fontset": "stix",
+      "fallback_used": true,
+      "times_unavailable_in_test": true
+    },
+    "palette": [
+      "#C8102E",
+      "#111111",
+      "#555555",
+      "#949494"
+    ],
+    "decorative_halo_has_no_interval_meaning": true,
+    "funding_figure_intervals": "95% calendar-month cluster bootstrap, 5000 resamples, seed 1729"
+  },
+  "funding_reproduction": {
+    "absolute_tolerance": 1e-10,
+    "bootstrap_resamples": 5000,
+    "bootstrap_seed": 1729,
+    "event_table_sha256": "a5ff7c458dd80c3189549f2d676f3731ab3994a7df0d7271082f5cba02d2f795",
+    "finite_events": 543,
+    "operation": "recompute_and_verify",
+    "relative_tolerance": 1e-10,
+    "status": "PASS",
+    "total_events": 545
+  }
+}

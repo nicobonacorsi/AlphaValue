@@ -1,0 +1,16 @@
+{
+  "alpha": 0.05,
+  "power": 0.9,
+  "A_star": 8.563847350667974,
+  "K": 11.146049158250165,
+  "best_two_look_values": {
+    "0.1": 1.5856212249998296,
+    "0.01": 1.0016393869875093,
+    "0.001": 0.7887518270960395,
+    "0.0001": 0.6106412969186911,
+    "1e-05": 0.46629260034989994,
+    "1e-06": 0.38619786055429356
+  },
+  "scope": "Asymptotic references and preserved feasible policies; not a computed unrestricted finite-horizon optimum.",
+  "cash_scope": "Exponents require the uniform reward-family assumptions in the paper."
+}

@@ -1,0 +1,46 @@
+{
+  "funding_persistence": {
+    "finite_lifetime_score_events": 543,
+    "n": 543,
+    "spearman_lifetime_future": 0.47407476016841166,
+    "spearman_edge_future": 0.3832597881990353,
+    "spearman_t_future": 0.3605614700378723,
+    "spearman_lifetime_edge": 0.7711797778894812,
+    "incremental_lifetime_given_edge": 0.27773784592625855,
+    "incremental_lifetime_given_edge_and_t": 0.12263890554002561,
+    "top_quintile_lifetime": {
+      "n": 109,
+      "positive_count": 100,
+      "positive_share": 0.9174311926605505,
+      "mean_sign_survival": 16.81651376146789
+    },
+    "top_quintile_edge": {
+      "n": 109,
+      "positive_count": 93,
+      "positive_share": 0.8532110091743119,
+      "mean_sign_survival": 14.972477064220184
+    },
+    "leave_one_series_incremental_range": [
+      0.24885316247724573,
+      0.304911136673175
+    ],
+    "calendar_month_cluster_ci95": {
+      "lifetime": [
+        0.2830811405346187,
+        0.6174280811936684
+      ],
+      "edge": [
+        0.16545720203481457,
+        0.5471012409369325
+      ],
+      "t_stat": [
+        0.1773025619409058,
+        0.5211645212719885
+      ],
+      "incremental_lifetime_given_edge": [
+        0.12279556411266397,
+        0.40614013266573834
+      ]
+    }
+  }
+}

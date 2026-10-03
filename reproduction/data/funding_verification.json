@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "operation": "recompute_and_verify",
+  "total_events": 545,
+  "finite_events": 543,
+  "bootstrap_resamples": 5000,
+  "bootstrap_seed": 1729,
+  "event_table_sha256": "a5ff7c458dd80c3189549f2d676f3731ab3994a7df0d7271082f5cba02d2f795",
+  "absolute_tolerance": 1e-10,
+  "relative_tolerance": 1e-10
+}

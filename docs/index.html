@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Can this alpha be certified before it fades? Interactive Certified Alpha Capacity calculator and Alpha Survival Frontier.">
+  <meta name="theme-color" content="#f7f6f2">
+  <title>Certified Alpha Capacity — Statistical Arbitrage When Learning Takes Time</title>
+  <style>
+:root{
+  --paper:#f7f6f2;
+  --surface:#fff;
+  --ink:#101217;
+  --muted:#68707c;
+  --soft:#8c929c;
+  --line:#dddcd5;
+  --line-strong:#c8c7c0;
+  --blue:#2457e6;
+  --blue-soft:#eef2ff;
+  --blue-pale:#f5f7ff;
+  --green:#17745b;
+  --amber:#9b5b24;
+  --shadow:0 20px 58px rgba(16,18,23,.06);
+  --radius:16px;
+  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.shell{width:min(1240px,calc(100% - 44px));margin:0 auto}
+.site-header{position:sticky;top:0;z-index:30;background:rgba(247,246,242,.94);backdrop-filter:blur(14px);border-bottom:1px solid rgba(200,199,192,.72)}
+.header-inner{height:62px;display:flex;align-items:center;justify-content:space-between;gap:30px}
+.brand{font-weight:760;letter-spacing:-.025em;font-size:15px;display:flex;align-items:center;gap:10px}
+.brand small{font-weight:550;color:var(--soft);letter-spacing:0;font-size:11px}
+.topnav{display:flex;align-items:center;gap:24px;color:#5d6570;font-size:12px;font-weight:650}
+.topnav a:hover{color:var(--ink)}
+.topnav .paper-link{color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:2px}
+
+.intro{padding:56px 0 30px}
+.intro-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:70px;align-items:end}
+.eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:820;color:#777e89;margin-bottom:13px}
+.intro h1{font-size:52px;line-height:1.02;letter-spacing:-.054em;margin:0;max-width:700px;font-weight:760}
+.intro-copy{font-size:17px;line-height:1.58;color:#59616d;margin:18px 0 0;max-width:710px}
+.benchmark{border-left:1px solid var(--line-strong);padding-left:30px;margin-bottom:3px}
+.benchmark-label{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#858b95;font-weight:800}
+.benchmark-value{margin-top:8px;font-size:15px;line-height:1.5;color:#313741}
+.benchmark-value strong{font-size:33px;line-height:1;letter-spacing:-.04em;margin-right:4px}
+.benchmark-meta{margin-top:10px;color:#7a818b;font-size:11px;line-height:1.5}
+
+.tool-wrap{padding:14px 0 78px}
+.tool{display:grid;grid-template-columns:360px minmax(0,1fr);background:var(--surface);border:1px solid var(--line-strong);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.controls{padding:26px 26px 22px;border-right:1px solid var(--line)}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.panel-head h2{font-size:17px;letter-spacing:-.02em;margin:0}.panel-head p{font-size:11px;color:var(--muted);margin:4px 0 0}
+.text-button{border:0;background:transparent;color:#737b86;font-size:11px;font-weight:700;padding:5px 0}.text-button:hover{color:var(--ink)}
+.control-group{padding:20px 0;border-bottom:1px solid #ecebe6}
+.control-row{display:flex;align-items:baseline;justify-content:space-between;gap:18px}
+.control-label strong{font-size:12px;display:block}.control-label span{font-size:10px;color:#8c929b;display:block;margin-top:3px;line-height:1.4}
+.value-box{display:flex;align-items:baseline;gap:6px;border-bottom:1px solid #bfc3c9;padding:2px 0 4px;min-width:92px;justify-content:flex-end}
+.value-box input{width:64px;border:0;outline:0;background:transparent;text-align:right;font-weight:720;font-size:21px;letter-spacing:-.03em;color:var(--ink);appearance:textfield}.value-box input::-webkit-outer-spin-button,.value-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.value-box span{font-size:10px;color:#888f99;font-weight:650}
+input[type=range]{width:100%;height:3px;margin:17px 0 1px;appearance:none;background:#d7d9de;border-radius:99px;outline:0}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:15px;height:15px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 0 0 1px #8f959e;cursor:grab}
+input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 0 0 1px #8f959e;cursor:grab}
+.advanced{padding-top:17px}
+.advanced summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-size:11px;font-weight:750;color:#444b55}.advanced summary::-webkit-details-marker{display:none}.advanced summary:after{content:"+";font-size:17px;color:#858c96;font-weight:400}.advanced[open] summary:after{content:"−"}.advanced summary small{margin-left:auto;color:#8a919b;font-size:9.5px;font-weight:600}
+.advanced-grid{display:grid;grid-template-columns:1fr;gap:11px;padding-top:15px}.advanced-grid label{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:10px;color:#707884}.advanced-grid select{min-width:118px;border:1px solid var(--line);background:#fbfbf9;color:var(--ink);height:34px;border-radius:7px;padding:0 8px;font-size:11px}
+.control-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;font-size:9.5px;color:#949aa3}.control-foot b{font-weight:700;color:#717985}
+
+.workspace{min-width:0;padding:26px 28px 20px;background:#fff}
+.result-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:30px;padding-bottom:17px;border-bottom:1px solid var(--line)}
+.status{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:780;color:#3f4650}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px #f7eee6}.status-dot.pass{background:var(--green);box-shadow:0 0 0 4px #e8f2ee}
+.result-tools{display:flex;gap:17px}.result-tools button{border:0;background:transparent;color:#747c87;font-size:10.5px;font-weight:700;padding:1px 0}.result-tools button:hover{color:var(--ink)}
+.readout{display:flex;align-items:baseline;gap:13px;margin-top:12px;flex-wrap:wrap}.readout strong{font-size:34px;letter-spacing:-.045em;font-weight:750}.readout span{font-size:17px;color:#6e7580;font-weight:520}.readout-note{font-size:11px;color:#858c96;margin:6px 0 0}
+.quick-metrics{display:flex;align-items:center;gap:22px;margin-top:14px;flex-wrap:wrap}.metric{display:flex;align-items:baseline;gap:7px;font-size:10px;color:#818894}.metric strong{font-size:13px;color:#343a44;letter-spacing:-.01em}.metric .cr{font-size:17px;color:var(--ink)}
+.budget-mini{width:190px;height:5px;border-radius:99px;background:#eceef2;position:relative;overflow:hidden}.budget-mini:after{content:"";position:absolute;left:80%;top:0;bottom:0;width:1px;background:#4d5663}.budget-fill{height:100%;background:var(--blue);border-radius:99px;transition:width .18s ease}.budget-fill.pass{background:var(--green)}
+.chart-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-top:25px}.chart-head h3{font-size:12px;margin:0;font-weight:760}.chart-head p{font-size:10px;color:#8c939d;margin:5px 0 0}.chart-hint{font-size:9.5px;color:#8e959e;white-space:nowrap}
+.chart-shell{margin-top:9px;border-top:1px solid #ebeae5;padding-top:8px;user-select:none}
+#frontierChart{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+.plot-bg{fill:#fff}.grid-line{stroke:#ecebe6;stroke-width:1}.grid-line.vertical{stroke:#f1f0ec}.axis-line{stroke:#afb3ba;stroke-width:1}.axis-label,.axis-title{fill:#7e858f;font-family:var(--sans);font-size:11px}.axis-title{font-size:10px;font-weight:650}.feasible-area{fill:#f1f4ff}.frontier-line{fill:none;stroke:var(--blue);stroke-width:3.2;stroke-linecap:round}.region-label{fill:#a2a7af;font-family:var(--sans);font-size:9px;font-weight:800;letter-spacing:.13em}.region-label.good{fill:#6e7da6}.point-guide{stroke:#9ba0a7;stroke-width:1;stroke-dasharray:3 5}.current-point{fill:#111318;stroke:#fff;stroke-width:3;pointer-events:none}.drag-hit{fill:transparent;cursor:grab}.point-label-bg{fill:#111318}.point-label-text{fill:#fff;font-family:var(--sans);font-size:10.5px;font-weight:720;letter-spacing:.01em}.hover-line{stroke:#a9aeb7;stroke-width:1;stroke-dasharray:3 4}.hover-dot{fill:var(--blue);stroke:#fff;stroke-width:2}.hover-box{fill:#fff;stroke:#cfd2d7;stroke-width:1}.hover-text{fill:#737a85;font-family:var(--sans);font-size:9.5px}.hover-text.strong{fill:#252a31;font-size:10.5px;font-weight:760}
+.reach-line{border-top:1px solid var(--line);margin-top:5px;padding-top:17px;display:flex;align-items:center;justify-content:space-between;gap:30px}.reach-line p{margin:0;font-size:11px;color:#666e79;line-height:1.5}.reach-line p strong{color:var(--ink)}.reach-contract{font-size:9.5px;color:#949aa3;white-space:nowrap}.reach-contract strong{color:#6f7782}
+
+.benchmark-strip{padding:0 0 80px}.benchmark-strip-inner{border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line);padding:24px 2px;display:flex;align-items:center;justify-content:space-between;gap:40px}.benchmark-strip blockquote{margin:0;font-size:21px;line-height:1.42;letter-spacing:-.026em;max-width:900px}.benchmark-strip blockquote strong{font-weight:790}.benchmark-strip span{font-size:10px;color:#858c96;line-height:1.45;max-width:170px;text-align:right}
+
+.method{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:76px 0 74px}
+.section-head{display:grid;grid-template-columns:.9fr 1.1fr;gap:80px;align-items:end;margin-bottom:27px}.section-head h2{margin:0;font-size:36px;line-height:1.06;letter-spacing:-.045em}.section-head p{margin:0;color:#6d747f;font-size:13px;line-height:1.65;max-width:600px}
+.method-table{border-top:1px solid var(--line-strong)}
+.method-row{display:grid;grid-template-columns:265px minmax(300px,1fr) 310px;gap:36px;align-items:center;min-height:176px;border-bottom:1px solid var(--line);padding:24px 0}
+.method-index{display:flex;gap:14px;align-items:flex-start}.method-index>span{font-size:9px;color:#9aa0a8;font-weight:800;letter-spacing:.12em;margin-top:3px}.method-index strong{display:block;font-size:13px}.method-index p,.method-note p{font-size:10.5px;color:#7f8690;line-height:1.55;margin:6px 0 0}.math{color:#17191e;text-align:center;overflow:hidden}.math mjx-container{margin:0!important;max-width:100%}.math mjx-container svg{max-width:100%;height:auto}.math-sub{margin-top:4px;opacity:.82}.math-sub mjx-container svg{max-height:34px}.method-note strong{display:block;font-size:11px;color:#414853}.method-row:last-child{background:var(--blue-pale);margin:0 -18px;padding-left:18px;padding-right:18px;border-bottom:0;border-radius:12px}.method-row:last-child .method-note strong{color:#2146ad}
+
+
+.positioning{padding:72px 0 70px;background:var(--paper)}
+.positioning-head{margin-bottom:26px}
+.compare-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line-strong)}
+.compare-item{padding:21px 28px 24px 0;border-top:2px solid transparent}
+.compare-item+.compare-item{border-left:1px solid var(--line);padding-left:28px}
+.compare-item.cac{border-top-color:var(--blue)}
+.compare-item>span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.12em;font-weight:820;color:#8a9099;margin-bottom:8px}
+.compare-item.cac>span{color:var(--blue)}
+.compare-item h3{font-size:15px;line-height:1.35;letter-spacing:-.015em;margin:0 0 8px}
+.compare-item p{font-size:11px;line-height:1.58;color:#707782;margin:0;max-width:34em}
+.scope-note{max-width:930px;margin:20px 0 0;font-size:10.5px;line-height:1.6;color:#7d848e}
+.scope-note strong{color:#535a64}
+.research{padding:72px 0 82px}.research-grid{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:22px;border-top:1px solid var(--line-strong);padding-top:28px}.research-intro h2{font-size:28px;letter-spacing:-.035em;margin:0 0 10px}.research-intro p{font-size:12px;color:#737a84;line-height:1.55;max-width:330px;margin:0}.research-link{border-left:1px solid var(--line);padding-left:20px}.research-link span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#9298a0;font-weight:800}.research-link strong{display:block;font-size:14px;margin-top:9px}.research-link p{font-size:10.5px;color:#7b828c;line-height:1.5;margin:6px 0 14px}.research-link a{font-size:10.5px;font-weight:760;color:#315ed0;border-bottom:1px solid #a7b9ed;padding-bottom:2px}
+footer{border-top:1px solid var(--line);padding:24px 0 30px;color:#858b94;font-size:10px}.footer-inner{display:flex;justify-content:space-between;gap:30px}.footer-inner strong{color:#555c66;font-weight:700}.footer-links{display:flex;gap:18px}
+
+@media(max-width:1000px){
+  .intro-grid{grid-template-columns:1fr;gap:28px}.benchmark{border-left:0;border-top:1px solid var(--line);padding:20px 0 0;max-width:640px}
+  .tool{grid-template-columns:320px minmax(0,1fr)}
+  .method-row{grid-template-columns:220px 1fr;gap:24px}.method-note{grid-column:1/-1;padding-left:0}.research-grid{grid-template-columns:1fr 1fr}.research-intro{grid-column:1/-1}
+}
+@media(max-width:780px){
+  .shell{width:min(100% - 26px,1240px)}.header-inner{height:57px}.brand small{display:none}.topnav{gap:15px}.topnav a:first-child{display:none}
+  .intro{padding:40px 0 22px}.intro h1{font-size:42px}.intro-copy{font-size:15px}
+  .tool-wrap{padding-bottom:58px}.tool{grid-template-columns:1fr;border-radius:14px}.controls{border-right:0;border-bottom:1px solid var(--line);padding:22px 18px}.workspace{padding:22px 14px 14px}.result-bar{gap:12px}.result-tools{gap:12px}.readout{gap:8px}.readout strong{font-size:29px}.readout span{font-size:15px}.quick-metrics{gap:14px}.chart-head{align-items:flex-start}.chart-hint{display:none}#frontierChart{width:100%;height:auto}
+  .reach-line{align-items:flex-start;flex-direction:column;gap:8px}.reach-contract{white-space:normal}
+  .benchmark-strip{padding-bottom:58px}.benchmark-strip-inner{align-items:flex-start;flex-direction:column;gap:14px}.benchmark-strip blockquote{font-size:18px}.benchmark-strip span{text-align:left;max-width:none}
+  .method{padding:58px 0}.section-head{grid-template-columns:1fr;gap:14px}.section-head h2{font-size:31px}.method-row{grid-template-columns:1fr;gap:16px;padding:24px 2px}.method-index p{max-width:560px}.math{text-align:left}.math mjx-container{display:block!important}.math mjx-container svg{max-height:72px;width:auto}.method-row:last-child{margin:0;padding:24px 14px}.research{padding:54px 0}.research-grid{grid-template-columns:1fr}.research-intro{grid-column:auto}.research-link{border-left:0;border-top:1px solid var(--line);padding:18px 0 0}
+  .compare-grid{grid-template-columns:1fr}
+  .compare-item,.compare-item+.compare-item{padding:18px 0;border-left:0;border-top:1px solid var(--line)}
+  .compare-item.cac{border-top:2px solid var(--blue)}
+  .footer-inner{flex-direction:column;gap:10px}.footer-links{flex-wrap:wrap}
+}
+@media(max-width:430px){
+  .intro h1{font-size:37px}.topnav a:not(.paper-link){display:none}.benchmark-value strong{font-size:29px}
+  .control-row{align-items:flex-start}.control-label{max-width:170px}.value-box{min-width:82px}.value-box input{font-size:20px;width:56px}
+  .result-bar{flex-direction:column}.result-tools{align-self:flex-end;margin-top:-23px}.readout strong{font-size:27px}.readout span{font-size:14px}.budget-mini{width:140px}
+  .chart-head{margin-top:20px}.chart-head p{max-width:250px}.axis-label{font-size:10px}.axis-title{font-size:9px}.region-label{font-size:7.5px}.point-label-text{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+#frontierChart text{font-family:"Times New Roman",Times,serif}
+#frontierChart .frontier-line{stroke:#c8102e}
+#frontierChart .hover-dot{fill:#c8102e}
+#frontierChart .feasible-area{fill:#fcf1f3}
+#frontierChart .region-label.good{fill:#99616b}
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="#top">Certified Alpha Capacity <small>v1.5.0</small></a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#calculator">Calculator</a>
+        <a href="#method">Method</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#research">Reproduce</a>
+        <a class="paper-link" href="assets/Certified_Alpha_Capacity.pdf" target="_blank" rel="noreferrer">Paper ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="intro">
+      <div class="shell intro-grid">
+        <div>
+          <div class="eyebrow">Interactive research tool · canonical contract</div>
+          <h1>Can this alpha be certified before it fades?</h1>
+          <p class="intro-copy">Enter its initial Sharpe, economic half-life and how many candidates you screened. CAC compares the total evidence the signal can ever generate with the evidence your certification standard requires.</p>
+        </div>
+        <aside class="benchmark" aria-label="Canonical reference scenario">
+          <div class="benchmark-label">Canonical reference</div>
+          <div class="benchmark-value"><strong id="benchmarkYears">7.24</strong> years minimum half-life</div>
+          <div class="benchmark-meta">Sharpe 2.0 · 100 candidates · 5% family error budget · 90% power · Bonferroni</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tool-wrap" id="calculator">
+      <div class="shell">
+        <div class="tool">
+          <aside class="controls" aria-label="Scenario controls">
+            <div class="panel-head">
+              <div><h2>Scenario</h2><p>Change a field or drag the point.</p></div>
+              <button class="text-button" id="resetButton" type="button">Reset</button>
+            </div>
+
+            <div class="control-group">
+              <div class="control-row">
+                <div class="control-label"><strong>Initial Sharpe</strong><span>signal strength before decay</span></div>
+                <label class="value-box"><input id="sharpe" type="number" min="0.05" max="20" step="0.05" value="2.00" inputmode="decimal" aria-label="Initial Sharpe"><span>SR</span></label>
+              </div>
+              <input id="sharpeRange" type="range" min="0.25" max="5" step="0.05" value="2" aria-label="Initial Sharpe slider">
+            </div>
+
+            <div class="control-group">
+              <div class="control-row">
+                <div class="control-label"><strong>Economic half-life</strong><span>time until signal strength halves</span></div>
+                <label class="value-box"><input id="halfLife" type="number" min="0.05" max="1000" step="0.1" value="4.00" inputmode="decimal" aria-label="Economic half-life"><span>years</span></label>
+              </div>
+              <input id="halfLifeRange" type="range" min="0.25" max="20" step="0.05" value="4" aria-label="Half-life slider">
+            </div>
+
+            <div class="control-group">
+              <div class="control-row">
+                <div class="control-label"><strong>Candidates screened</strong><span>search multiplicity before selection</span></div>
+                <label class="value-box"><input id="multiplicity" type="number" min="1" max="10000000" step="1" value="100" inputmode="numeric" aria-label="Candidates screened"><span>signals</span></label>
+              </div>
+              <input id="multiplicityRange" type="range" min="1" max="1000" step="1" value="100" aria-label="Candidates screened slider">
+            </div>
+
+            <details class="advanced">
+              <summary><span>Advanced settings</span><small id="settingsLine">5% FWER · 90% power · Bonferroni</small></summary>
+              <div class="advanced-grid">
+                <label><span>Family error budget</span><select id="alpha"><option value="0.10">10%</option><option value="0.05" selected>5%</option><option value="0.025">2.5%</option><option value="0.01">1%</option></select></label>
+                <label><span>Required power</span><select id="power"><option value="0.80">80%</option><option value="0.90" selected>90%</option><option value="0.95">95%</option><option value="0.99">99%</option></select></label>
+                <label><span>Multiplicity correction</span><select id="correction"><option value="bonferroni" selected>Bonferroni</option><option value="sidak">Šidák</option></select></label>
+              </div>
+            </details>
+            <div class="control-foot"><span>Runs locally in your browser.</span><b>No data leaves this page.</b></div>
+          </aside>
+
+          <section class="workspace" aria-live="polite">
+            <div class="result-bar">
+              <div>
+                <div class="status"><span id="statusDot" class="status-dot"></span><span id="statusLabel">Below the certification frontier</span></div>
+                <div class="readout"><strong><span id="availableYears">4.00</span> years available</strong><span>/ <span id="requiredYears">7.24</span> required</span></div>
+                <p id="yearsLead" class="readout-note">3.24 additional years of half-life needed at SR 2.00</p>
+                <div class="quick-metrics">
+                  <div class="metric"><span>CR</span><strong id="crValue" class="cr">0.55</strong></div>
+                  <div class="budget-mini" aria-label="Available relative to required information"><div id="budgetFill" class="budget-fill"></div></div>
+                  <div class="metric"><span>information</span><strong id="infoBudget">5.77 / 10.45 nats</strong></div>
+                </div>
+              </div>
+              <div class="result-tools"><button id="copyLinkButton" type="button">Copy scenario</button><button id="downloadButton" type="button">Export JSON</button></div>
+            </div>
+
+            <div class="chart-head">
+              <div><h3>Alpha Survival Frontier</h3><p>Above the red curve, lifetime information meets the declared evidence requirement.</p></div>
+              <div class="chart-hint">Click anywhere · drag the black point · hover the curve</div>
+            </div>
+            <div class="chart-shell"><svg id="frontierChart" viewBox="0 0 920 480" role="img" aria-label="Interactive Alpha Survival Frontier chart"></svg></div>
+
+            <div class="reach-line">
+              <p>To reach the frontier, keep SR <strong id="currentSharpeInline">2.00</strong> and raise half-life to <strong><span id="minHalfLife">7.24</span> years</strong>, or keep the current half-life and raise Sharpe to <strong><span id="minSharpe">2.69</span></strong>.</p>
+              <div class="reach-contract"><strong id="contractName">Bonferroni</strong> · adjusted α <span id="perAlpha">0.00050</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="benchmark-strip">
+      <div class="shell benchmark-strip-inner">
+        <blockquote>A Sharpe-2 signal selected from 100 candidates needs a <strong>7.24-year half-life</strong> to reach the default certification frontier.</blockquote>
+        <span>Canonical Gaussian contract: 5% family error budget, 90% power, Bonferroni correction.</span>
+      </div>
+    </section>
+
+    <section class="method" id="method">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="eyebrow">Method</div><h2>Three quantities. One frontier.</h2></div>
+          <p>The browser exposes the closed-form canonical calculation. Richer unknown-scale and data-driven certificates remain in the AlphaValue Python package.</p>
+        </div>
+        <div class="method-table">
+          <article class="method-row">
+            <div class="method-index"><span>01</span><div><strong>Lifetime information</strong><p>Evidence the signal can generate before exponential economic decay exhausts its useful life.</p></div></div>
+            <div class="math" data-tex="\mathcal I_{\mathrm{life}}=\frac{S^2h}{4\log2}"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -2.018ex;" xmlns="http://www.w3.org/2000/svg" width="13.431ex" height="5.434ex" role="img" focusable="false" viewBox="0 -1509.9 5936.4 2401.9"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="49" d="M174 0H31Q-13 0 -21 2T-30 12Q-30 23 -17 36Q9 60 42 68L155 70Q187 102 214 179T257 333T302 491T366 610L369 614H305Q221 611 188 607T145 596T128 569Q119 543 94 529T47 512Q28 512 28 524Q28 527 32 539Q56 614 159 654Q218 678 312 682Q314 682 339 682T404 682T481 683H632Q642 678 642 671Q642 657 621 641T577 617Q570 615 507 614H444Q427 592 406 542Q382 478 355 366T310 209Q280 123 238 78L230 69H330Q442 70 442 74Q443 74 443 77T447 87T460 105Q490 134 527 137Q545 137 545 125Q545 120 542 112Q531 78 491 49T399 7Q379 2 360 2T174 0Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(578,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(278,0)"></path><path data-c="66" d="M273 0Q255 3 146 3Q43 3 34 0H26V46H42Q70 46 91 49Q99 52 103 60Q104 62 104 224V385H33V431H104V497L105 564L107 574Q126 639 171 668T266 704Q267 704 275 704T289 705Q330 702 351 679T372 627Q372 604 358 590T321 576T284 590T270 627Q270 647 288 667H284Q280 668 273 668Q245 668 223 647T189 592Q183 572 182 497V431H293V385H185V225Q185 63 186 61T189 57T194 54T199 51T206 49T213 48T222 47T231 47T241 46T251 46H282V0H273Z" transform="translate(556,0)"></path><path data-c="65" d="M28 218Q28 273 48 318T98 391T163 433T229 448Q282 448 320 430T378 380T406 316T415 245Q415 238 408 231H126V216Q126 68 226 36Q246 30 270 30Q312 30 342 62Q359 79 369 104L379 128Q382 131 395 131H398Q415 131 415 121Q415 117 412 108Q393 53 349 21T250 -11Q155 -11 92 58T28 218ZM333 275Q322 403 238 411H236Q228 411 220 410T195 402T166 381T143 340T127 274V267H333V275Z" transform="translate(862,0)"></path></g></g></g></g><g data-mml-node="mo" transform="translate(1829.3,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mfrac" transform="translate(2885,0)"><g data-mml-node="mrow" transform="translate(671.1,676)"><g data-mml-node="msup"><g data-mml-node="mi"><path data-c="1D446" d="M308 24Q367 24 416 76T466 197Q466 260 414 284Q308 311 278 321T236 341Q176 383 176 462Q176 523 208 573T273 648Q302 673 343 688T407 704H418H425Q521 704 564 640Q565 640 577 653T603 682T623 704Q624 704 627 704T632 705Q645 705 645 698T617 577T585 459T569 456Q549 456 549 465Q549 471 550 475Q550 478 551 494T553 520Q553 554 544 579T526 616T501 641Q465 662 419 662Q362 662 313 616T263 510Q263 480 278 458T319 427Q323 425 389 408T456 390Q490 379 522 342T554 242Q554 216 546 186Q541 164 528 137T492 78T426 18T332 -20Q320 -22 298 -22Q199 -22 144 33L134 44L106 13Q83 -14 78 -18T65 -22Q52 -22 52 -14Q52 -11 110 221Q112 227 130 227H143Q149 221 149 216Q149 214 148 207T144 186T142 153Q144 114 160 87T203 47T255 29T308 24Z"></path></g><g data-mml-node="mn" transform="translate(729.6,363) scale(0.707)"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g></g><g data-mml-node="mi" transform="translate(1133.2,0)"><path data-c="210E" d="M137 683Q138 683 209 688T282 694Q294 694 294 685Q294 674 258 534Q220 386 220 383Q220 381 227 388Q288 442 357 442Q411 442 444 415T478 336Q478 285 440 178T402 50Q403 36 407 31T422 26Q450 26 474 56T513 138Q516 149 519 151T535 153Q555 153 555 145Q555 144 551 130Q535 71 500 33Q466 -10 419 -10H414Q367 -10 346 17T325 74Q325 90 361 192T398 345Q398 404 354 404H349Q266 404 205 306L198 293L164 158Q132 28 127 16Q114 -11 83 -11Q69 -11 59 -2T48 16Q48 30 121 320L195 616Q195 629 188 632T149 637H128Q122 643 122 645T124 664Q129 683 137 683Z"></path></g></g><g data-mml-node="mrow" transform="translate(220,-686)"><g data-mml-node="mn"><path data-c="34" d="M462 0Q444 3 333 3Q217 3 199 0H190V46H221Q241 46 248 46T265 48T279 53T286 61Q287 63 287 115V165H28V211L179 442Q332 674 334 675Q336 677 355 677H373L379 671V211H471V165H379V114Q379 73 379 66T385 54Q393 47 442 46H471V0H462ZM293 211V545L74 212L183 211H293Z"></path></g><g data-mml-node="mi" transform="translate(666.7,0)"><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(278,0)"></path><path data-c="67" d="M329 409Q373 453 429 453Q459 453 472 434T485 396Q485 382 476 371T449 360Q416 360 412 390Q410 404 415 411Q415 412 416 414V415Q388 412 363 393Q355 388 355 386Q355 385 359 381T368 369T379 351T388 325T392 292Q392 230 343 187T222 143Q172 143 123 171Q112 153 112 133Q112 98 138 81Q147 75 155 75T227 73Q311 72 335 67Q396 58 431 26Q470 -13 470 -72Q470 -139 392 -175Q332 -206 250 -206Q167 -206 107 -175Q29 -140 29 -75Q29 -39 50 -15T92 18L103 24Q67 55 67 108Q67 155 96 193Q52 237 52 292Q52 355 102 398T223 442Q274 442 318 416L329 409ZM299 343Q294 371 273 387T221 404Q192 404 171 388T145 343Q142 326 142 292Q142 248 149 227T179 192Q196 182 222 182Q244 182 260 189T283 207T294 227T299 242Q302 258 302 292T299 343ZM403 -75Q403 -50 389 -34T348 -11T299 -2T245 0H218Q151 0 138 -6Q118 -15 107 -34T95 -74Q95 -84 101 -97T122 -127T170 -155T250 -167Q319 -167 361 -139T403 -75Z" transform="translate(778,0)"></path></g><g data-mml-node="mo" transform="translate(1944.7,0)"><path data-c="2061" d=""></path></g><g data-mml-node="mn" transform="translate(2111.3,0)"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g></g><rect width="2811.3" height="60" x="120" y="220"></rect></g></g></g></svg></mjx-container></div>
+            <div class="method-note"><strong>Strength × lifetime</strong><p>Higher initial Sharpe and longer half-life expand the available information budget.</p></div>
+          </article>
+          <article class="method-row">
+            <div class="method-index"><span>02</span><div><strong>Required information</strong><p>Evidence demanded by reliability, power and the search multiplicity declared before deployment.</p></div></div>
+            <div class="math" data-tex="\mathcal I_{\mathrm{crit}}=\frac12(z_{1-\alpha^\star}+z_{1-\beta})^2"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -1.552ex;" xmlns="http://www.w3.org/2000/svg" width="23.679ex" height="4.588ex" role="img" focusable="false" viewBox="0 -1342 10466.2 2028"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="49" d="M174 0H31Q-13 0 -21 2T-30 12Q-30 23 -17 36Q9 60 42 68L155 70Q187 102 214 179T257 333T302 491T366 610L369 614H305Q221 611 188 607T145 596T128 569Q119 543 94 529T47 512Q28 512 28 524Q28 527 32 539Q56 614 159 654Q218 678 312 682Q314 682 339 682T404 682T481 683H632Q642 678 642 671Q642 657 621 641T577 617Q570 615 507 614H444Q427 592 406 542Q382 478 355 366T310 209Q280 123 238 78L230 69H330Q442 70 442 74Q443 74 443 77T447 87T460 105Q490 134 527 137Q545 137 545 125Q545 120 542 112Q531 78 491 49T399 7Q379 2 360 2T174 0Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(578,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="63" d="M370 305T349 305T313 320T297 358Q297 381 312 396Q317 401 317 402T307 404Q281 408 258 408Q209 408 178 376Q131 329 131 219Q131 137 162 90Q203 29 272 29Q313 29 338 55T374 117Q376 125 379 127T395 129H409Q415 123 415 120Q415 116 411 104T395 71T366 33T318 2T249 -11Q163 -11 99 53T34 214Q34 318 99 383T250 448T370 421T404 357Q404 334 387 320Z"></path><path data-c="72" d="M36 46H50Q89 46 97 60V68Q97 77 97 91T98 122T98 161T98 203Q98 234 98 269T98 328L97 351Q94 370 83 376T38 385H20V408Q20 431 22 431L32 432Q42 433 60 434T96 436Q112 437 131 438T160 441T171 442H174V373Q213 441 271 441H277Q322 441 343 419T364 373Q364 352 351 337T313 322Q288 322 276 338T263 372Q263 381 265 388T270 400T273 405Q271 407 250 401Q234 393 226 386Q179 341 179 207V154Q179 141 179 127T179 101T180 81T180 66V61Q181 59 183 57T188 54T193 51T200 49T207 48T216 47T225 47T235 46T245 46H276V0H267Q249 3 140 3Q37 3 28 0H20V46H36Z" transform="translate(444,0)"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(836,0)"></path><path data-c="74" d="M27 422Q80 426 109 478T141 600V615H181V431H316V385H181V241Q182 116 182 100T189 68Q203 29 238 29Q282 29 292 100Q293 108 293 146V181H333V146V134Q333 57 291 17Q264 -10 221 -10Q187 -10 162 2T124 33T105 68T98 100Q97 107 97 248V385H18V422H27Z" transform="translate(1114,0)"></path></g></g></g></g><g data-mml-node="mo" transform="translate(1968.6,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mfrac" transform="translate(3024.3,0)"><g data-mml-node="mn" transform="translate(220,676)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g><g data-mml-node="mn" transform="translate(220,-686)"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g><rect width="700" height="60" x="120" y="220"></rect></g><g data-mml-node="msup" transform="translate(3964.3,0)"><g data-mml-node="mrow"><g data-mml-node="mo"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="msub" transform="translate(389,0)"><g data-mml-node="mi"><path data-c="1D467" d="M347 338Q337 338 294 349T231 360Q211 360 197 356T174 346T162 335T155 324L153 320Q150 317 138 317Q117 317 117 325Q117 330 120 339Q133 378 163 406T229 440Q241 442 246 442Q271 442 291 425T329 392T367 375Q389 375 411 408T434 441Q435 442 449 442H462Q468 436 468 434Q468 430 463 420T449 399T432 377T418 358L411 349Q368 298 275 214T160 106L148 94L163 93Q185 93 227 82T290 71Q328 71 360 90T402 140Q406 149 409 151T424 153Q443 153 443 143Q443 138 442 134Q425 72 376 31T278 -11Q252 -11 232 6T193 40T155 57Q111 57 76 -3Q70 -11 59 -11H54H41Q35 -5 35 -2Q35 13 93 84Q132 129 225 214T340 322Q352 338 347 338Z"></path></g><g data-mml-node="TeXAtom" transform="translate(498,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g><g data-mml-node="mo" transform="translate(500,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="msup" transform="translate(1278,0)"><g data-mml-node="mi"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></g><g data-mml-node="mo" transform="translate(673,289) scale(0.707)"><path data-c="22C6" d="M210 282Q210 284 225 381T241 480Q241 484 245 484Q249 486 251 486Q258 486 260 477T272 406Q275 390 276 380Q290 286 290 282L388 299Q484 314 487 314H488Q497 314 497 302Q497 297 434 266Q416 257 404 251L315 206L361 118Q372 98 383 75T401 40L407 28Q407 16 395 16Q394 16 392 16L390 17L250 159L110 17L108 16Q106 16 105 16Q93 16 93 28L99 40Q105 52 116 75T139 118L185 206L96 251Q6 296 4 300Q3 301 3 302Q3 314 12 314H13Q16 314 112 299L210 282Z"></path></g></g></g></g><g data-mml-node="mo" transform="translate(2824.1,0)"><path data-c="2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path></g><g data-mml-node="msub" transform="translate(3824.4,0)"><g data-mml-node="mi"><path data-c="1D467" d="M347 338Q337 338 294 349T231 360Q211 360 197 356T174 346T162 335T155 324L153 320Q150 317 138 317Q117 317 117 325Q117 330 120 339Q133 378 163 406T229 440Q241 442 246 442Q271 442 291 425T329 392T367 375Q389 375 411 408T434 441Q435 442 449 442H462Q468 436 468 434Q468 430 463 420T449 399T432 377T418 358L411 349Q368 298 275 214T160 106L148 94L163 93Q185 93 227 82T290 71Q328 71 360 90T402 140Q406 149 409 151T424 153Q443 153 443 143Q443 138 442 134Q425 72 376 31T278 -11Q252 -11 232 6T193 40T155 57Q111 57 76 -3Q70 -11 59 -11H54H41Q35 -5 35 -2Q35 13 93 84Q132 129 225 214T340 322Q352 338 347 338Z"></path></g><g data-mml-node="TeXAtom" transform="translate(498,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g><g data-mml-node="mo" transform="translate(500,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="mi" transform="translate(1278,0)"><path data-c="1D6FD" d="M29 -194Q23 -188 23 -186Q23 -183 102 134T186 465Q208 533 243 584T309 658Q365 705 429 705H431Q493 705 533 667T573 570Q573 465 469 396L482 383Q533 332 533 252Q533 139 448 65T257 -10Q227 -10 203 -2T165 17T143 40T131 59T126 65L62 -188Q60 -194 42 -194H29ZM353 431Q392 431 427 419L432 422Q436 426 439 429T449 439T461 453T472 471T484 495T493 524T501 560Q503 569 503 593Q503 611 502 616Q487 667 426 667Q384 667 347 643T286 582T247 514T224 455Q219 439 186 308T152 168Q151 163 151 147Q151 99 173 68Q204 26 260 26Q302 26 349 51T425 137Q441 171 449 214T457 279Q457 337 422 372Q380 358 347 358H337Q258 358 258 389Q258 396 261 403Q275 431 353 431Z"></path></g></g></g><g data-mml-node="mo" transform="translate(5676.3,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g></g><g data-mml-node="mn" transform="translate(6098.3,477.1) scale(0.707)"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g></g></g></g></svg></mjx-container><div class="math-sub"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -1.552ex;" xmlns="http://www.w3.org/2000/svg" width="23.328ex" height="4.081ex" role="img" focusable="false" viewBox="0 -1118 10311.1 1804"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mi"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></g><g data-mml-node="mo" transform="translate(673,413) scale(0.707)"><path data-c="22C6" d="M210 282Q210 284 225 381T241 480Q241 484 245 484Q249 486 251 486Q258 486 260 477T272 406Q275 390 276 380Q290 286 290 282L388 299Q484 314 487 314H488Q497 314 497 302Q497 297 434 266Q416 257 404 251L315 206L361 118Q372 98 383 75T401 40L407 28Q407 16 395 16Q394 16 392 16L390 17L250 159L110 17L108 16Q106 16 105 16Q93 16 93 28L99 40Q105 52 116 75T139 118L185 206L96 251Q6 296 4 300Q3 301 3 302Q3 314 12 314H13Q16 314 112 299L210 282Z"></path></g></g><g data-mml-node="mo" transform="translate(1354.3,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mfrac" transform="translate(2410.1,0)"><g data-mml-node="mi" transform="translate(425.5,676)"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></g><g data-mml-node="mi" transform="translate(220,-686)"><path data-c="1D440" d="M289 629Q289 635 232 637Q208 637 201 638T194 648Q194 649 196 659Q197 662 198 666T199 671T201 676T203 679T207 681T212 683T220 683T232 684Q238 684 262 684T307 683Q386 683 398 683T414 678Q415 674 451 396L487 117L510 154Q534 190 574 254T662 394Q837 673 839 675Q840 676 842 678T846 681L852 683H948Q965 683 988 683T1017 684Q1051 684 1051 673Q1051 668 1048 656T1045 643Q1041 637 1008 637Q968 636 957 634T939 623Q936 618 867 340T797 59Q797 55 798 54T805 50T822 48T855 46H886Q892 37 892 35Q892 19 885 5Q880 0 869 0Q864 0 828 1T736 2Q675 2 644 2T609 1Q592 1 592 11Q592 13 594 25Q598 41 602 43T625 46Q652 46 685 49Q699 52 704 61Q706 65 742 207T813 490T848 631L654 322Q458 10 453 5Q451 4 449 3Q444 0 433 0Q418 0 415 7Q413 11 374 317L335 624L267 354Q200 88 200 79Q206 46 272 46H282Q288 41 289 37T286 19Q282 3 278 1Q274 0 267 0Q265 0 255 0T221 1T157 2Q127 2 95 1T58 0Q43 0 39 2T35 11Q35 13 38 25T43 40Q45 46 65 46Q135 46 154 86Q158 92 223 354T289 629Z"></path></g><rect width="1251" height="60" x="120" y="220"></rect></g><g data-mml-node="mstyle" transform="translate(3901.1,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mtext" transform="translate(4901.1,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path data-c="42" d="M131 622Q124 629 120 631T104 634T61 637H28V683H229H267H346Q423 683 459 678T531 651Q574 627 599 590T624 512Q624 461 583 419T476 360L466 357Q539 348 595 302T651 187Q651 119 600 67T469 3Q456 1 242 0H28V46H61Q103 47 112 49T131 61V622ZM511 513Q511 560 485 594T416 636Q415 636 403 636T371 636T333 637Q266 637 251 636T232 628Q229 624 229 499V374H312L396 375L406 377Q410 378 417 380T442 393T474 417T499 456T511 513ZM537 188Q537 239 509 282T430 336L329 337H229V200V116Q229 57 234 52Q240 47 334 47H383Q425 47 443 53Q486 67 511 104T537 188Z" transform="translate(389,0)"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(1097,0)"></path><path data-c="6E" d="M41 46H55Q94 46 102 60V68Q102 77 102 91T102 122T103 161T103 203Q103 234 103 269T102 328V351Q99 370 88 376T43 385H25V408Q25 431 27 431L37 432Q47 433 65 434T102 436Q119 437 138 438T167 441T178 442H181V402Q181 364 182 364T187 369T199 384T218 402T247 421T285 437Q305 442 336 442Q450 438 463 329Q464 322 464 190V104Q464 66 466 59T477 49Q498 46 526 46H542V0H534L510 1Q487 2 460 2T422 3Q319 3 310 0H302V46H318Q379 46 379 62Q380 64 380 200Q379 335 378 343Q372 371 358 385T334 402T308 404Q263 404 229 370Q202 343 195 315T187 232V168V108Q187 78 188 68T191 55T200 49Q221 46 249 46H265V0H257L234 1Q210 2 183 2T145 3Q42 3 33 0H25V46H41Z" transform="translate(1597,0)"></path><path data-c="66" d="M273 0Q255 3 146 3Q43 3 34 0H26V46H42Q70 46 91 49Q99 52 103 60Q104 62 104 224V385H33V431H104V497L105 564L107 574Q126 639 171 668T266 704Q267 704 275 704T289 705Q330 702 351 679T372 627Q372 604 358 590T321 576T284 590T270 627Q270 647 288 667H284Q280 668 273 668Q245 668 223 647T189 592Q183 572 182 497V431H293V385H185V225Q185 63 186 61T189 57T194 54T199 51T206 49T213 48T222 47T231 47T241 46T251 46H282V0H273Z" transform="translate(2153,0)"></path><path data-c="65" d="M28 218Q28 273 48 318T98 391T163 433T229 448Q282 448 320 430T378 380T406 316T415 245Q415 238 408 231H126V216Q126 68 226 36Q246 30 270 30Q312 30 342 62Q359 79 369 104L379 128Q382 131 395 131H398Q415 131 415 121Q415 117 412 108Q393 53 349 21T250 -11Q155 -11 92 58T28 218ZM333 275Q322 403 238 411H236Q228 411 220 410T195 402T166 381T143 340T127 274V267H333V275Z" transform="translate(2459,0)"></path><path data-c="72" d="M36 46H50Q89 46 97 60V68Q97 77 97 91T98 122T98 161T98 203Q98 234 98 269T98 328L97 351Q94 370 83 376T38 385H20V408Q20 431 22 431L32 432Q42 433 60 434T96 436Q112 437 131 438T160 441T171 442H174V373Q213 441 271 441H277Q322 441 343 419T364 373Q364 352 351 337T313 322Q288 322 276 338T263 372Q263 381 265 388T270 400T273 405Q271 407 250 401Q234 393 226 386Q179 341 179 207V154Q179 141 179 127T179 101T180 81T180 66V61Q181 59 183 57T188 54T193 51T200 49T207 48T216 47T225 47T235 46T245 46H276V0H267Q249 3 140 3Q37 3 28 0H20V46H36Z" transform="translate(2903,0)"></path><path data-c="72" d="M36 46H50Q89 46 97 60V68Q97 77 97 91T98 122T98 161T98 203Q98 234 98 269T98 328L97 351Q94 370 83 376T38 385H20V408Q20 431 22 431L32 432Q42 433 60 434T96 436Q112 437 131 438T160 441T171 442H174V373Q213 441 271 441H277Q322 441 343 419T364 373Q364 352 351 337T313 322Q288 322 276 338T263 372Q263 381 265 388T270 400T273 405Q271 407 250 401Q234 393 226 386Q179 341 179 207V154Q179 141 179 127T179 101T180 81T180 66V61Q181 59 183 57T188 54T193 51T200 49T207 48T216 47T225 47T235 46T245 46H276V0H267Q249 3 140 3Q37 3 28 0H20V46H36Z" transform="translate(3295,0)"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(3687,0)"></path><path data-c="6E" d="M41 46H55Q94 46 102 60V68Q102 77 102 91T102 122T103 161T103 203Q103 234 103 269T102 328V351Q99 370 88 376T43 385H25V408Q25 431 27 431L37 432Q47 433 65 434T102 436Q119 437 138 438T167 441T178 442H181V402Q181 364 182 364T187 369T199 384T218 402T247 421T285 437Q305 442 336 442Q450 438 463 329Q464 322 464 190V104Q464 66 466 59T477 49Q498 46 526 46H542V0H534L510 1Q487 2 460 2T422 3Q319 3 310 0H302V46H318Q379 46 379 62Q380 64 380 200Q379 335 378 343Q372 371 358 385T334 402T308 404Q263 404 229 370Q202 343 195 315T187 232V168V108Q187 78 188 68T191 55T200 49Q221 46 249 46H265V0H257L234 1Q210 2 183 2T145 3Q42 3 33 0H25V46H41Z" transform="translate(4187,0)"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(4743,0)"></path><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z" transform="translate(5021,0)"></path></g></g></g></svg></mjx-container></div></div>
+            <div class="method-note"><strong>Reliability × power × search</strong><p>Screening more candidates tightens the per-candidate error budget and moves the frontier upward.</p></div>
+          </article>
+          <article class="method-row">
+            <div class="method-index"><span>03</span><div><strong>Certification</strong><p>Compare the economic information budget with the information required by the deployment contract.</p></div></div>
+            <div class="math" data-tex="\mathrm{CR}=\mathcal I_{\mathrm{life}}/\mathcal I_{\mathrm{crit}}"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -1.909ex;" xmlns="http://www.w3.org/2000/svg" width="11.137ex" height="4.984ex" role="img" focusable="false" viewBox="0 -1359 4922.3 2202.8"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="43" d="M56 342Q56 428 89 500T174 615T283 681T391 705Q394 705 400 705T408 704Q499 704 569 636L582 624L612 663Q639 700 643 704Q644 704 647 704T653 705H657Q660 705 666 699V419L660 413H626Q620 419 619 430Q610 512 571 572T476 651Q457 658 426 658Q322 658 252 588Q173 509 173 342Q173 221 211 151Q232 111 263 84T328 45T384 29T428 24Q517 24 571 93T626 244Q626 251 632 257H660L666 251V236Q661 133 590 56T403 -21Q262 -21 159 83T56 342Z"></path><path data-c="52" d="M130 622Q123 629 119 631T103 634T60 637H27V683H202H236H300Q376 683 417 677T500 648Q595 600 609 517Q610 512 610 501Q610 468 594 439T556 392T511 361T472 343L456 338Q459 335 467 332Q497 316 516 298T545 254T559 211T568 155T578 94Q588 46 602 31T640 16H645Q660 16 674 32T692 87Q692 98 696 101T712 105T728 103T732 90Q732 59 716 27T672 -16Q656 -22 630 -22Q481 -16 458 90Q456 101 456 163T449 246Q430 304 373 320L363 322L297 323H231V192L232 61Q238 51 249 49T301 46H334V0H323Q302 3 181 3Q59 3 38 0H27V46H60Q102 47 111 49T130 61V622ZM491 499V509Q491 527 490 539T481 570T462 601T424 623T362 636Q360 636 340 636T304 637H283Q238 637 234 628Q231 624 231 492V360H289Q390 360 434 378T489 456Q491 467 491 499Z" transform="translate(722,0)"></path></g></g><g data-mml-node="mo" transform="translate(1735.8,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mfrac" transform="translate(2791.6,0)"><g data-mml-node="msub" transform="translate(289.7,676)"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="49" d="M174 0H31Q-13 0 -21 2T-30 12Q-30 23 -17 36Q9 60 42 68L155 70Q187 102 214 179T257 333T302 491T366 610L369 614H305Q221 611 188 607T145 596T128 569Q119 543 94 529T47 512Q28 512 28 524Q28 527 32 539Q56 614 159 654Q218 678 312 682Q314 682 339 682T404 682T481 683H632Q642 678 642 671Q642 657 621 641T577 617Q570 615 507 614H444Q427 592 406 542Q382 478 355 366T310 209Q280 123 238 78L230 69H330Q442 70 442 74Q443 74 443 77T447 87T460 105Q490 134 527 137Q545 137 545 125Q545 120 542 112Q531 78 491 49T399 7Q379 2 360 2T174 0Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(578,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(278,0)"></path><path data-c="66" d="M273 0Q255 3 146 3Q43 3 34 0H26V46H42Q70 46 91 49Q99 52 103 60Q104 62 104 224V385H33V431H104V497L105 564L107 574Q126 639 171 668T266 704Q267 704 275 704T289 705Q330 702 351 679T372 627Q372 604 358 590T321 576T284 590T270 627Q270 647 288 667H284Q280 668 273 668Q245 668 223 647T189 592Q183 572 182 497V431H293V385H185V225Q185 63 186 61T189 57T194 54T199 51T206 49T213 48T222 47T231 47T241 46T251 46H282V0H273Z" transform="translate(556,0)"></path><path data-c="65" d="M28 218Q28 273 48 318T98 391T163 433T229 448Q282 448 320 430T378 380T406 316T415 245Q415 238 408 231H126V216Q126 68 226 36Q246 30 270 30Q312 30 342 62Q359 79 369 104L379 128Q382 131 395 131H398Q415 131 415 121Q415 117 412 108Q393 53 349 21T250 -11Q155 -11 92 58T28 218ZM333 275Q322 403 238 411H236Q228 411 220 410T195 402T166 381T143 340T127 274V267H333V275Z" transform="translate(862,0)"></path></g></g></g></g><g data-mml-node="msub" transform="translate(220,-686)"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="49" d="M174 0H31Q-13 0 -21 2T-30 12Q-30 23 -17 36Q9 60 42 68L155 70Q187 102 214 179T257 333T302 491T366 610L369 614H305Q221 611 188 607T145 596T128 569Q119 543 94 529T47 512Q28 512 28 524Q28 527 32 539Q56 614 159 654Q218 678 312 682Q314 682 339 682T404 682T481 683H632Q642 678 642 671Q642 657 621 641T577 617Q570 615 507 614H444Q427 592 406 542Q382 478 355 366T310 209Q280 123 238 78L230 69H330Q442 70 442 74Q443 74 443 77T447 87T460 105Q490 134 527 137Q545 137 545 125Q545 120 542 112Q531 78 491 49T399 7Q379 2 360 2T174 0Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(578,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="63" d="M370 305T349 305T313 320T297 358Q297 381 312 396Q317 401 317 402T307 404Q281 408 258 408Q209 408 178 376Q131 329 131 219Q131 137 162 90Q203 29 272 29Q313 29 338 55T374 117Q376 125 379 127T395 129H409Q415 123 415 120Q415 116 411 104T395 71T366 33T318 2T249 -11Q163 -11 99 53T34 214Q34 318 99 383T250 448T370 421T404 357Q404 334 387 320Z"></path><path data-c="72" d="M36 46H50Q89 46 97 60V68Q97 77 97 91T98 122T98 161T98 203Q98 234 98 269T98 328L97 351Q94 370 83 376T38 385H20V408Q20 431 22 431L32 432Q42 433 60 434T96 436Q112 437 131 438T160 441T171 442H174V373Q213 441 271 441H277Q322 441 343 419T364 373Q364 352 351 337T313 322Q288 322 276 338T263 372Q263 381 265 388T270 400T273 405Q271 407 250 401Q234 393 226 386Q179 341 179 207V154Q179 141 179 127T179 101T180 81T180 66V61Q181 59 183 57T188 54T193 51T200 49T207 48T216 47T225 47T235 46T245 46H276V0H267Q249 3 140 3Q37 3 28 0H20V46H36Z" transform="translate(444,0)"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(836,0)"></path><path data-c="74" d="M27 422Q80 426 109 478T141 600V615H181V431H316V385H181V241Q182 116 182 100T189 68Q203 29 238 29Q282 29 292 100Q293 108 293 146V181H333V146V134Q333 57 291 17Q264 -10 221 -10Q187 -10 162 2T124 33T105 68T98 100Q97 107 97 248V385H18V422H27Z" transform="translate(1114,0)"></path></g></g></g></g><rect width="1890.8" height="60" x="120" y="220"></rect></g></g></g></svg></mjx-container></div>
+            <div class="method-note"><strong>CR ≥ 1 reaches the frontier</strong><p>Below one, the declared lifetime is too short under the chosen canonical contract.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="positioning" id="positioning">
+      <div class="shell">
+        <div class="section-head positioning-head">
+          <div><div class="eyebrow">What CAC asks</div><h2>A different question from significance.</h2></div>
+          <p>A significance test asks whether observed performance clears a statistical bar. A track-record calculation asks how long a stable signal needs. CAC asks whether a decaying signal has enough lifetime information to clear the bar at all.</p>
+        </div>
+        <div class="compare-grid">
+          <article class="compare-item">
+            <span>Observed significance</span>
+            <h3>Did the observed signal clear the bar?</h3>
+            <p>Ask whether the performance already observed is distinguishable from luck, possibly after accounting for selection.</p>
+          </article>
+          <article class="compare-item">
+            <span>Track-record length</span>
+            <h3>How long would a stable signal need?</h3>
+            <p>Ask how much observation time a signal of constant strength needs to reach the chosen evidence standard.</p>
+          </article>
+          <article class="compare-item cac">
+            <span>Certified Alpha Capacity</span>
+            <h3>Is certification possible before decay wins?</h3>
+            <p>Ask whether the entire remaining economic life of a decaying signal contains enough information to reach the evidence requirement at all.</p>
+          </article>
+        </div>
+        <p class="scope-note"><strong>Canonical scope.</strong> The interactive threshold uses the paper's Gaussian, known-volatility, exponential-decay, fixed-sample contract. Reaching the frontier means certification is feasible under that contract; it is not a profitability claim.</p>
+      </div>
+    </section>
+
+        <section class="method" id="evidence">
+      <div class="shell">
+        <div class="section-head"><h2>Theory and illustration</h2><p>Mathematical guarantees, numerical constructions and descriptive evidence answer different questions.</p></div>
+        <div class="method-row">
+          <div class="method-index"><span>01</span><div><strong>Learning before decay</strong><p>A reliability frontier in a specified statistical experiment.</p></div></div>
+          <div><p>The canonical Gaussian model puts statistical learning and opportunity decay on a common information clock. Its feasibility frontier determines whether the declared reliability contract can be met.</p><p class="method-note" style="padding-left:0">The guarantees require the likelihood and observation assumptions in the paper. Cash value also depends on the payoff map and its uniform regularity conditions.</p></div>
+        </div>
+        <div class="method-row">
+          <div class="method-index"><span>02</span><div><strong>Funding persistence</strong><p>A descriptive empirical illustration.</p></div></div>
+          <div><p>The funding panel examines how a lifetime score relates to persistence in future signed funding, including information beyond contemporaneous funding magnitude.</p><p class="method-note" style="padding-left:0">This association does not establish executable hedged-trade returns. No confirmatory trading-profit validation is claimed.</p></div>
+        </div>
+        <div class="method-row">
+          <div class="method-index"><span>03</span><div><strong>Learning near the frontier</strong><p>Residual information and cash payoffs have distinct asymptotic scales.</p></div></div>
+          <figure style="margin:0;min-width:0">
+            <a href="assets/near_critical.svg" target="_blank" rel="noreferrer" aria-label="Open scientific figure at full size"><img src="assets/near_critical.svg" alt="Near-frontier figure comparing the inverse-logarithmic asymptotic reference, feasible two-look values and a fixed-time benchmark, with a separate comparison of information and cash exponents." style="width:100%;height:auto;display:block"></a>
+            <figcaption class="method-note" style="padding:12px 0 0">The asymptotic reference shows the sharp limiting law. Cash exponents use the uniform reward-family assumptions in the paper. <a href="assets/near_critical.svg" target="_blank" rel="noreferrer">Open figure at full size ↗</a></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="research" id="research">
+      <div class="shell research-grid">
+        <div class="research-intro"><div class="eyebrow">Research artifact</div><h2>Read it. Inspect it. Reproduce it.</h2><p>The calculator is one surface of a theorem-driven release with source, tests and a reproducibility record.</p></div>
+        <div class="research-link"><span>Paper</span><strong>Certified Alpha Capacity</strong><p>Theory, proofs, scope and empirical illustration.</p><a href="assets/Certified_Alpha_Capacity.pdf" target="_blank" rel="noreferrer">Open PDF ↗</a></div>
+        <div class="research-link"><span>Implementation</span><strong>AlphaValue</strong><p>Python package, CLI and reference calculator.</p><a href="https://github.com/nicobonacorsi/AlphaValue" target="_blank" rel="noreferrer">View package ↗</a></div>
+        <div class="research-link"><span>Archive</span><strong>Software release</strong><p>Versioned software snapshot and citation record.</p><a href="https://doi.org/10.5281/zenodo.23070742" target="_blank" rel="noreferrer">Open record ↗</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell footer-inner"><div><strong>Certified Alpha Capacity v1.5.0</strong> · Nicolò Bonacorsi</div><div class="footer-links"><a href="#calculator">Calculator</a><a href="#method">Method</a><a href="assets/Certified_Alpha_Capacity.pdf" target="_blank" rel="noreferrer">Paper</a></div></div></footer>
+  <script>
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=="undefined"&&module.exports) module.exports=api;
+  else root.AlphaValueCAC=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(){
+  "use strict";
+
+  const LN2=Math.log(2);
+
+  function normInv(p){
+    if(!(p>0&&p<1)) throw new RangeError("p must be in (0,1)");
+    const a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00];
+    const b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01];
+    const c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00];
+    const d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,3.754408661907416e+00];
+    const plow=.02425,phigh=1-plow; let q,r;
+    if(p<plow){q=Math.sqrt(-2*Math.log(p));return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+    if(p>phigh){q=Math.sqrt(-2*Math.log(1-p));return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+    q=p-.5;r=q*q;return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
+  }
+  function erfc(x){const z=Math.abs(x),t=1/(1+.5*z);const ans=t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(.37409196+t*(.09678418+t*(-.18628806+t*(.27886807+t*(-1.13520398+t*(1.48851587+t*(-.82215223+t*.17087277)))))))));return x>=0?ans:2-ans}
+  function normalCdf(x){return .5*erfc(-x/Math.SQRT2)}
+  function refinedNormInv(p){let x=normInv(p);for(let i=0;i<2;i++){const pdf=Math.exp(-.5*x*x)/Math.sqrt(2*Math.PI),e=normalCdf(x)-p,u=e/pdf;x-=u/(1+.5*x*u)}return x}
+  function adjustedAlpha(alpha,multiplicity,correction){return correction==="sidak"?-Math.expm1(Math.log1p(-alpha)/multiplicity):alpha/multiplicity}
+
+  function computeCAC(input){
+    const sharpe=Math.abs(Number(input.sharpe)),halfLife=Number(input.halfLife),multiplicity=Math.max(1,Math.round(Number(input.multiplicity))),alpha=Number(input.alpha),power=Number(input.power),correction=input.correction==="sidak"?"sidak":"bonferroni";
+    if(!(sharpe>0&&halfLife>0&&multiplicity>=1&&alpha>0&&alpha<1&&power>0&&power<1)) throw new Error("Invalid scenario");
+    const perAlpha=adjustedAlpha(alpha,multiplicity,correction);
+    const requiredInformation=.5*Math.pow(refinedNormInv(1-perAlpha)+refinedNormInv(power),2);
+    const lifetimeInformation=sharpe*sharpe*halfLife/(4*LN2);
+    const ratio=lifetimeInformation/requiredInformation;
+    const minimumHalfLife=4*LN2*requiredInformation/(sharpe*sharpe);
+    const minimumSharpe=Math.sqrt(4*LN2*requiredInformation/halfLife);
+    const deltaHalfLife=halfLife-minimumHalfLife;
+    const status=ratio<1-1e-10?"INFEASIBLE":ratio>1+1e-10?"FEASIBLE":"BOUNDARY";
+    return {sharpe,halfLife,multiplicity,alpha,power,correction,perAlpha,requiredInformation,lifetimeInformation,ratio,minimumHalfLife,minimumSharpe,deltaHalfLife,status};
+  }
+
+  function fmt(x,d=2){return Number(x).toFixed(d)}
+  function clamp(x,a,b){return Math.min(b,Math.max(a,x))}
+  function svgEl(name,attrs){const el=document.createElementNS("http://www.w3.org/2000/svg",name);Object.entries(attrs||{}).forEach(([k,v])=>el.setAttribute(k,v));return el}
+  function niceCeil(x){if(!(x>0))return 1;const p=Math.pow(10,Math.floor(Math.log10(x))),q=x/p;return (q<=1?1:q<=2?2:q<=4?4:q<=6?6:10)*p}
+
+  function renderChart(svg,r){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    const mobile=typeof window!=="undefined" && window.matchMedia("(max-width: 780px)").matches;
+    const cssWidth=Math.max(300,Math.round(svg.getBoundingClientRect().width||svg.clientWidth||920));
+    const W=mobile?cssWidth:920;
+    const H=mobile?Math.round(W*0.78):480;
+    const ml=mobile?48:66,mr=mobile?12:28,mt=mobile?28:42,mb=mobile?48:58,iw=W-ml-mr,ih=H-mt-mb;
+    svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+    const xMin=.5;
+    const xMax=Math.max(4.25,Math.ceil((r.sharpe+.75)*4)/4);
+    const yTarget=Math.max(12,r.halfLife*1.32,r.minimumHalfLife*1.18);
+    const yMax=niceCeil(yTarget);
+    const X=x=>ml+(x-xMin)/(xMax-xMin)*iw;
+    const Y=y=>mt+ih-clamp(y,0,yMax)/yMax*ih;
+    const invX=px=>xMin+(px-ml)/iw*(xMax-xMin);
+    const invY=py=>(mt+ih-py)/ih*yMax;
+
+    const defs=svgEl("defs");
+    const clip=svgEl("clipPath",{id:"plotClip"}); clip.appendChild(svgEl("rect",{x:ml,y:mt,width:iw,height:ih,rx:2})); defs.appendChild(clip); svg.appendChild(defs);
+
+    const plot=svgEl("g",{"clip-path":"url(#plotClip)"}); svg.appendChild(plot);
+    plot.appendChild(svgEl("rect",{x:ml,y:mt,width:iw,height:ih,class:"plot-bg"}));
+
+    for(let i=0;i<=4;i++){
+      const value=i*yMax/4,y=Y(value);
+      plot.appendChild(svgEl("line",{x1:ml,x2:W-mr,y1:y,y2:y,class:"grid-line"}));
+      const t=svgEl("text",{x:ml-13,y:y+4,"text-anchor":"end",class:"axis-label"});t.textContent=Number.isInteger(value)?String(value):fmt(value,1);svg.appendChild(t);
+    }
+    const xTicks=mobile?4:6;
+    for(let i=0;i<=xTicks;i++){
+      const xv=xMin+(xMax-xMin)*i/xTicks,x=X(xv);
+      plot.appendChild(svgEl("line",{x1:x,x2:x,y1:mt,y2:mt+ih,class:"grid-line vertical"}));
+      const t=svgEl("text",{x,y:H-26,"text-anchor":"middle",class:"axis-label"});t.textContent=fmt(xv,1);svg.appendChild(t);
+    }
+
+    const frontier=[];
+    for(let i=0;i<=260;i++){
+      const x=xMin+(xMax-xMin)*i/260,fy=4*LN2*r.requiredInformation/(x*x);
+      frontier.push({x,y:fy,px:X(x),py:Y(fy)});
+    }
+    const visible=frontier.filter(p=>p.y<=yMax);
+    if(visible.length>1){
+      const p0=visible[0],pn=visible[visible.length-1];
+      const area=[`M ${p0.px.toFixed(2)} ${mt}`,`L ${W-mr} ${mt}`,`L ${W-mr} ${pn.py.toFixed(2)}`]
+        .concat(visible.slice().reverse().map(p=>`L ${p.px.toFixed(2)} ${p.py.toFixed(2)}`)).concat(["Z"]).join(" ");
+      plot.appendChild(svgEl("path",{d:area,class:"feasible-area"}));
+      const line=visible.map((p,i)=>(i?"L":"M")+p.px.toFixed(2)+" "+p.py.toFixed(2)).join(" ");
+      plot.appendChild(svgEl("path",{d:line,class:"frontier-line"}));
+    }
+
+    const regionGood=svgEl("text",{x:W-mr-8,y:mt+20,"text-anchor":"end",class:"region-label good"});regionGood.textContent="CERTIFIABLE";svg.appendChild(regionGood);
+    const regionBad=svgEl("text",{x:W-mr-8,y:mt+ih-12,"text-anchor":"end",class:"region-label"});regionBad.textContent=mobile?"INSUFFICIENT LIFETIME":"DECAYS BEFORE CERTIFICATION";svg.appendChild(regionBad);
+
+    svg.appendChild(svgEl("line",{x1:ml,x2:ml,y1:mt,y2:mt+ih,class:"axis-line"}));
+    svg.appendChild(svgEl("line",{x1:ml,x2:W-mr,y1:mt+ih,y2:mt+ih,class:"axis-line"}));
+
+    const currentX=clamp(r.sharpe,xMin,xMax), currentY=clamp(r.halfLife,0,yMax), px=X(currentX),py=Y(currentY);
+    plot.appendChild(svgEl("line",{x1:px,x2:px,y1:py,y2:mt+ih,class:"point-guide"}));
+    plot.appendChild(svgEl("line",{x1:ml,x2:px,y1:py,y2:py,class:"point-guide"}));
+    const hit=svgEl("circle",{cx:px,cy:py,r:19,class:"drag-hit","data-role":"current-point"});plot.appendChild(hit);
+    const point=svgEl("circle",{cx:px,cy:py,r:7.5,class:"current-point","data-role":"current-point"});plot.appendChild(point);
+
+    const currentLabel=svgEl("g",{class:"point-label"});
+    const labelW=mobile?122:142,labelH=mobile?31:35;
+    const labelX=clamp(px+12,ml+5,W-mr-labelW-4),labelY=clamp(py-(labelH+10),mt+5,mt+ih-labelH-5);
+    currentLabel.appendChild(svgEl("rect",{x:labelX,y:labelY,width:labelW,height:labelH,rx:6,class:"point-label-bg"}));
+    const text=svgEl("text",{x:labelX+9,y:labelY+(mobile?20:22),class:"point-label-text"});text.textContent=`SR ${fmt(r.sharpe,2)}  ·  ${fmt(r.halfLife,2)}y`;currentLabel.appendChild(text);svg.appendChild(currentLabel);
+
+    const hover=svgEl("g",{class:"hover-layer",opacity:"0","pointer-events":"none"});
+    const hoverLine=svgEl("line",{x1:0,x2:0,y1:mt,y2:mt+ih,class:"hover-line"});hover.appendChild(hoverLine);
+    const hoverDot=svgEl("circle",{cx:0,cy:0,r:5,class:"hover-dot"});hover.appendChild(hoverDot);
+    const hb=svgEl("rect",{x:0,y:0,width:mobile?132:151,height:45,rx:7,class:"hover-box"});hover.appendChild(hb);
+    const ht1=svgEl("text",{x:0,y:0,class:"hover-text strong"});hover.appendChild(ht1);
+    const ht2=svgEl("text",{x:0,y:0,class:"hover-text"});hover.appendChild(ht2);
+    svg.appendChild(hover);
+
+    const xTitle=svgEl("text",{x:ml+iw/2,y:H-4,"text-anchor":"middle",class:"axis-title"});xTitle.textContent="Initial Sharpe";svg.appendChild(xTitle);
+    const yTitleX=mobile?13:16;
+    const yTitle=svgEl("text",{x:yTitleX,y:mt+ih/2,transform:`rotate(-90 ${yTitleX} ${mt+ih/2})`,"text-anchor":"middle",class:"axis-title"});yTitle.textContent="Half-life (years)";svg.appendChild(yTitle);
+
+    svg._chartState={W,H,ml,mr,mt,mb,iw,ih,xMin,xMax,yMax,X,Y,invX,invY,requiredInformation:r.requiredInformation,hover,hoverLine,hoverDot,hb,ht1,ht2};
+  }
+
+  function initBrowser(){
+    if(typeof document==="undefined") return;
+    const $=id=>document.getElementById(id);
+    const defaults={sharpe:"2.00",halfLife:"4.00",multiplicity:"100",alpha:"0.05",power:"0.90",correction:"bonferroni"};
+    const ids=["sharpe","halfLife","multiplicity","alpha","power","correction"];
+    const rangeMap={sharpe:"sharpeRange",halfLife:"halfLifeRange",multiplicity:"multiplicityRange"};
+    let lastResult=null,dragging=false;
+
+    const readInputs=()=>Object.fromEntries(ids.map(id=>[id,$(id).value]));
+    function syncRange(id){const rid=rangeMap[id];if(!rid)return;const input=$(id),range=$(rid);const v=Number(input.value);if(Number.isFinite(v)){if(v>Number(range.max))range.max=String(Math.ceil(v*1.2));if(v<Number(range.min))range.min=String(Math.max(0.01,v*.8));range.value=String(clamp(v,Number(range.min),Number(range.max)))}}
+    function syncNumberFromRange(id){$(id).value=$(rangeMap[id]).value}
+    function loadQuery(){const q=new URLSearchParams(location.search);ids.forEach(id=>{if(q.has(id))$(id).value=q.get(id)});Object.keys(rangeMap).forEach(syncRange)}
+
+    function render(){
+      let r;try{r=computeCAC(readInputs())}catch(_){return null}
+      lastResult=r;
+      const feasible=r.status!=="INFEASIBLE",delta=Math.abs(r.deltaHalfLife);
+      $("statusLabel").textContent=r.status==="BOUNDARY"?"On the certification frontier":feasible?"Above the certification frontier":"Below the certification frontier";
+      $("statusDot").className="status-dot "+(feasible?"pass":"short");
+      $("availableYears").textContent=fmt(r.halfLife,2);
+      $("requiredYears").textContent=fmt(r.minimumHalfLife,2);
+      $("yearsLead").textContent=feasible?`${fmt(delta,2)} years of half-life above the minimum`:`${fmt(delta,2)} additional years of half-life needed at SR ${fmt(r.sharpe,2)}`;
+      $("crValue").textContent=fmt(r.ratio,2);
+      $("infoBudget").textContent=`${fmt(r.lifetimeInformation,2)} / ${fmt(r.requiredInformation,2)} nats`;
+      $("minSharpe").textContent=fmt(r.minimumSharpe,2);
+      $("minHalfLife").textContent=fmt(r.minimumHalfLife,2);
+      $("currentSharpeInline").textContent=fmt(r.sharpe,2);
+      $("perAlpha").textContent=r.perAlpha<.001?r.perAlpha.toExponential(2):fmt(r.perAlpha,5);
+      $("contractName").textContent=r.correction==="sidak"?"Šidák":"Bonferroni";
+      $("settingsLine").textContent=`${Math.round(r.alpha*1000)/10}% FWER · ${Math.round(r.power*100)}% power · ${r.correction==="sidak"?"Šidák":"Bonferroni"}`;
+      $("benchmarkYears").textContent=fmt(computeCAC({sharpe:2,halfLife:1,multiplicity:100,alpha:r.alpha,power:r.power,correction:r.correction}).minimumHalfLife,2);
+      const ratioPct=clamp(r.ratio,0,1.25)/1.25*100; $("budgetFill").style.width=ratioPct+"%"; $("budgetFill").className="budget-fill "+(feasible?"pass":"");
+      renderChart($("frontierChart"),r);
+      return r;
+    }
+
+    Object.keys(rangeMap).forEach(id=>{
+      $(rangeMap[id]).addEventListener("input",()=>{syncNumberFromRange(id);render()});
+      $(id).addEventListener("input",()=>{syncRange(id);render()});
+    });
+    ["alpha","power","correction"].forEach(id=>$(id).addEventListener("input",render));
+
+    $("resetButton").addEventListener("click",()=>{Object.entries(defaults).forEach(([id,v])=>$(id).value=v);Object.keys(rangeMap).forEach(syncRange);history.replaceState(null,"",location.pathname);render()});
+    $("copyLinkButton").addEventListener("click",async()=>{const url=location.href.split("?")[0]+"?"+new URLSearchParams(readInputs()).toString();try{await navigator.clipboard.writeText(url);const old=$("copyLinkButton").textContent;$("copyLinkButton").textContent="Copied";setTimeout(()=>$("copyLinkButton").textContent=old,1200)}catch(_){window.alert("Copy this scenario link:\n\n"+url)}});
+    $("downloadButton").addEventListener("click",()=>{const r=render();if(!r)return;const blob=new Blob([JSON.stringify({calculator:"Certified Alpha Capacity v1.5.0",model:"canonical Gaussian / zero-hurdle exponential decay",...r},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="cac-scenario.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)});
+
+    const svg=$("frontierChart");
+    let resizeTimer=null;
+    if(typeof ResizeObserver!=="undefined") {
+      const ro=new ResizeObserver(()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(lastResult)renderChart(svg,lastResult)},80)});
+      ro.observe(svg.parentElement);
+    }
+    function pointerToSvg(ev){const rect=svg.getBoundingClientRect(),s=svg._chartState;if(!s)return null;return {x:(ev.clientX-rect.left)/rect.width*s.W,y:(ev.clientY-rect.top)/rect.height*s.H}}
+    function setFromChart(ev){const p=pointerToSvg(ev),s=svg._chartState;if(!p||!s)return;const x=clamp(s.invX(p.x),s.xMin,s.xMax),y=clamp(s.invY(p.y),.05,s.yMax);$("sharpe").value=fmt(x,2);$("halfLife").value=fmt(y,2);syncRange("sharpe");syncRange("halfLife");render()}
+    svg.addEventListener("pointerdown",ev=>{const p=pointerToSvg(ev),s=svg._chartState;if(!p||!s||p.x<s.ml||p.x>s.W-s.mr||p.y<s.mt||p.y>s.mt+s.ih)return;dragging=true;svg.setPointerCapture(ev.pointerId);setFromChart(ev)});
+    svg.addEventListener("pointermove",ev=>{
+      if(dragging){setFromChart(ev);return}
+      const p=pointerToSvg(ev),s=svg._chartState;if(!p||!s||p.x<s.ml||p.x>s.W-s.mr||p.y<s.mt||p.y>s.mt+s.ih){if(s)s.hover.setAttribute("opacity","0");return}
+      const sr=clamp(s.invX(p.x),s.xMin,s.xMax),need=4*LN2*s.requiredInformation/(sr*sr),px=s.X(sr),py=s.Y(need);if(need>s.yMax){s.hover.setAttribute("opacity","0");return}
+      s.hover.setAttribute("opacity","1");s.hoverLine.setAttribute("x1",px);s.hoverLine.setAttribute("x2",px);s.hoverDot.setAttribute("cx",px);s.hoverDot.setAttribute("cy",py);
+      const bx=clamp(px+11,s.ml+6,s.W-s.mr-157),by=clamp(py-58,s.mt+5,s.mt+s.ih-49);s.hb.setAttribute("x",bx);s.hb.setAttribute("y",by);s.ht1.setAttribute("x",bx+10);s.ht1.setAttribute("y",by+18);s.ht2.setAttribute("x",bx+10);s.ht2.setAttribute("y",by+35);s.ht1.textContent=`SR ${fmt(sr,2)}`;s.ht2.textContent=`needs ${fmt(need,2)} years`;
+    });
+    svg.addEventListener("pointerup",ev=>{dragging=false;try{svg.releasePointerCapture(ev.pointerId)}catch(_){}});
+    svg.addEventListener("pointercancel",()=>{dragging=false});
+    svg.addEventListener("pointerleave",()=>{if(!dragging&&svg._chartState)svg._chartState.hover.setAttribute("opacity","0")});
+
+    loadQuery();render();
+  }
+
+  if(typeof window!=="undefined") window.addEventListener("DOMContentLoaded",initBrowser);
+  return {computeCAC,adjustedAlpha,refinedNormInv};
+});
+
+</script>
+
+</body>
+</html>

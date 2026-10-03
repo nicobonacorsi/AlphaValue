@@ -1,0 +1,65 @@
+{
+  "contract": "Full Gaussian observation; null zero; two positive nonordered exponential drift templates; same individual L2 information; uniform alternative power.",
+  "alpha": 0.05,
+  "target_power": 0.9,
+  "horizon": 5.0,
+  "decays": [
+    0.2,
+    2.0
+  ],
+  "template_correlation": 0.6183098834814216,
+  "individual_critical_A": 8.563847350667979,
+  "critical_template_amplitudes": [
+    1.9904010199819033,
+    5.852810391023917
+  ],
+  "robust_critical_A": 9.650042179829663,
+  "robust_to_individual_information_ratio": 1.1268349124738848,
+  "power_shortfall_at_individual_CR1": 0.03445110755962921,
+  "quadrature_repeat_power_difference": 0.0,
+  "rows": [
+    {
+      "individual_CR": 0.8,
+      "known_profile_power": 0.8346246120957743,
+      "size": 0.04999999999999999,
+      "power": 0.7894954941430488,
+      "log_threshold": 1.0175277203942374
+    },
+    {
+      "individual_CR": 1.0,
+      "known_profile_power": 0.8999999999999999,
+      "size": 0.04999999999999978,
+      "power": 0.8655488924403708,
+      "log_threshold": 0.7279395723570264
+    },
+    {
+      "individual_CR": 1.05,
+      "known_profile_power": 0.9121029931745201,
+      "size": 0.05,
+      "power": 0.8802371500460843,
+      "log_threshold": 0.646926015014697
+    },
+    {
+      "individual_CR": 1.1,
+      "known_profile_power": 0.922832622345744,
+      "size": 0.04999999999992033,
+      "power": 0.8934621958899351,
+      "log_threshold": 0.5629417952671311
+    },
+    {
+      "individual_CR": 1.2,
+      "known_profile_power": 0.9407219187233608,
+      "size": 0.05000000000000344,
+      "power": 0.9160099260545749,
+      "log_threshold": 0.3868096131408292
+    },
+    {
+      "individual_CR": 1.5,
+      "known_profile_power": 0.973764312156928,
+      "size": 0.050000000000000114,
+      "power": 0.9599439018231279,
+      "log_threshold": -0.19641148937958328
+    }
+  ],
+  "interpretation": "A geometry effect of unknown alternative profile. Neither economic P&L nor evidence that CAC beats a forecasting model. Minimax optimality follows by symmetry and the mixture NP lemma; numeric values use floating-point quadrature, not interval arithmetic."
+}

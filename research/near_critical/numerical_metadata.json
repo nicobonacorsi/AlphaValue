@@ -1,0 +1,12 @@
+{
+  "method": "one-dimensional deterministic Gaussian quadrature",
+  "objective": "admissible two-look construction only; not the optimum",
+  "total_checks": 18,
+  "alpha_default": 0.05,
+  "beta_default": 0.1,
+  "eps_min": 1e-06,
+  "eps_max": 0.1,
+  "caveat": "Floating-point quadrature diagnostics are not interval-arithmetic certificates.",
+  "theorem": "This feasible construction does not compute the leading optimal constant; the revised paper establishes it analytically.",
+  "capacity_solver_available_in_attached_release": false
+}
