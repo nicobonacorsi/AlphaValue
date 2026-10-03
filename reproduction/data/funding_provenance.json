@@ -1,0 +1,93 @@
+{
+  "schema": "cac-funding-provenance-1",
+  "description": "Event table derived from the pinned source inputs by the supplied extraction rule.",
+  "source_repository": "supervik/historical-funding-rates-fetcher",
+  "source_commit": "66a085bc68147df2dd3360a25ac6e9f38e7077b5",
+  "files": {
+    "reproduction/funding_persistence.py": "a77370b1eace7b620ab0d0ac1d899653f68086019a1debc7a1be5502a5dd957a",
+    "reproduction/export_funding_events.py": "75b38f3fa15bad8caf23b099d802f89728304372083534ceed7ffc071dc3528b",
+    "reproduction/verify_funding.py": "ebb5eee06fd91a70a2be2c35cea82d30c595c479512abe936b7888f511c9fd49",
+    "reproduction/ar1_predictor_audit.py": "ecfdaf44574aef4850ec953bcc8665dd19838f67445dbef9db1b8958ff38d58e",
+    "reproduction/data/funding_events.csv": "a5ff7c458dd80c3189549f2d676f3731ab3994a7df0d7271082f5cba02d2f795",
+    "reproduction/data/funding_events.export.json": "89f8feae94a6f190b15486f840b46db0148e0030b89f2ed2a0a35428e57f83a1",
+    "reproduction/data/funding_input_manifest.json": "bd555aa32fc7016e415de955a327bc109f497e4c5ab8b67c49f2916453a0670a",
+    "reproduction/data/funding_results.json": "ea5b58be4cd3644d48db729a85781e95fac1ac798baff616b0bd68a41d2edaa9",
+    "reproduction/reference_results.json": "2b9f473488d3c89aa686a35b70efce6863f986e8be90144a546d7c7de729ca44",
+    "reproduction/ar1_predictor_reference.json": "18d1fd2a89c624ea62e06b4c412a415fc5c1f87b78c1837070617a52e842efb5"
+  },
+  "input_manifest_sha256": "bd555aa32fc7016e415de955a327bc109f497e4c5ab8b67c49f2916453a0670a",
+  "script_sha256": "a77370b1eace7b620ab0d0ac1d899653f68086019a1debc7a1be5502a5dd957a",
+  "summary_sha256": "ea5b58be4cd3644d48db729a85781e95fac1ac798baff616b0bd68a41d2edaa9",
+  "event_table": {
+    "path": "reproduction/data/funding_events.csv",
+    "rows": 545,
+    "finite_score_rows": 543,
+    "columns": [
+      "series",
+      "time",
+      "month",
+      "settlement_index",
+      "training_start",
+      "training_end",
+      "future_start",
+      "future_end",
+      "current_funding",
+      "phi_hat",
+      "residual_sigma",
+      "historical_sigma",
+      "lifetime_score",
+      "edge_z",
+      "t_stat",
+      "future_sum_7d",
+      "future_positive",
+      "sign_survival_length",
+      "ar1_raw_cumulative_21",
+      "ar1_cumulative_forecast_snr",
+      "ar1_finite_geometric_information_proxy",
+      "source_path",
+      "finite_analysis_event"
+    ],
+    "sha256": "a5ff7c458dd80c3189549f2d676f3731ab3994a7df0d7271082f5cba02d2f795",
+    "observation_timestamp_columns": [
+      "time",
+      "training_start",
+      "training_end",
+      "future_start",
+      "future_end"
+    ]
+  },
+  "computation": {
+    "bootstrap": {
+      "resamples": 5000,
+      "seed": 1729,
+      "ci95": {
+        "lifetime": [
+          0.2830811405346187,
+          0.6174280811936684
+        ],
+        "edge": [
+          0.16545720203481457,
+          0.5471012409369325
+        ],
+        "t_stat": [
+          0.1773025619409058,
+          0.5211645212719885
+        ],
+        "incremental": [
+          0.12279556411266397,
+          0.40614013266573834
+        ]
+      }
+    },
+    "numerical_tolerance": {
+      "absolute": 1e-10,
+      "relative": 1e-10
+    },
+    "software": {
+      "python": "3.11.16",
+      "numpy": "2.4.6",
+      "pandas": "3.0.6",
+      "scipy": "1.17.1"
+    }
+  }
+}

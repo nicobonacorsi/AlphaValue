@@ -1,0 +1,31 @@
+{
+  "requested_mode": "times",
+  "selected_mode": "times",
+  "fallback_used": false,
+  "family": "Times New Roman",
+  "mathtext_fontset": "custom",
+  "faces": {
+    "regular": {
+      "name": "Times New Roman",
+      "file": "times.ttf",
+      "sha256": "fbb57cdb0079137adc0e478913ca134dfee02aa2ef443738ec5e839bf97a1f7f"
+    },
+    "italic": {
+      "name": "Times New Roman",
+      "file": "timesi.ttf",
+      "sha256": "c2c134968be4259aaa78845d3aca5e91c4a0bd10d98e4d2e48ac3c12f3c63b89"
+    },
+    "bold": {
+      "name": "Times New Roman",
+      "file": "timesbd.ttf",
+      "sha256": "e94ff9111656f17bd81e9f822f1e234edcd370bcbacfdebf998b8938f525ac77"
+    },
+    "bold_italic": {
+      "name": "Times New Roman",
+      "file": "timesbi.ttf",
+      "sha256": "8d2c8d8d25d9fc529d08558c42effa771617914a455603881e212a26e2f2ddcd"
+    }
+  },
+  "pdf": "Embedded TrueType subsets (fonttype 42)",
+  "svg": "Glyph outlines from Times New Roman; no font binaries distributed"
+}

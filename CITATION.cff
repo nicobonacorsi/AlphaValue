@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "Please cite the software and the accompanying paper."
+title: "AlphaValue: Certified Alpha Capacity"
+type: software
+authors:
+  - family-names: Bonacorsi
+    given-names: Nicolò
+    orcid: "https://orcid.org/0009-0005-0479-3102"
+version: "1.5.0"
+doi: "10.5281/zenodo.23070742"
+repository-code: "https://github.com/nicobonacorsi/AlphaValue"
+license: MIT
+keywords:
+  - statistical arbitrage
+  - sequential testing
+  - alpha decay
+  - optimal stopping
+  - information theory
+references:
+  - type: preprint
+    title: "Certified Alpha Capacity: Statistical Arbitrage When Learning Takes Time"
+    authors:
+      - family-names: Bonacorsi
+        given-names: Nicolò
+    doi: "10.48550/arXiv.2610.01115"
+    url: "https://arxiv.org/abs/2610.01115"

@@ -1,0 +1,111 @@
+{
+  "source_repository": "supervik/historical-funding-rates-fetcher",
+  "source_commit": "66a085bc68147df2dd3360a25ac6e9f38e7077b5",
+  "series_count": 12,
+  "total_events": 545,
+  "finite_lifetime_score_events": 543,
+  "calendar_month_clusters": 38,
+  "series_counts": {
+    "BTC-USDT:binance": 80,
+    "BTC-USDT:bybit": 39,
+    "BTC-USDT:gate": 52,
+    "BTC-USDT:htx": 26,
+    "BTC-USDT:kucoin": 47,
+    "BTC-USDT:mexc": 42,
+    "ETH-USDT:binance": 62,
+    "ETH-USDT:bybit": 38,
+    "ETH-USDT:gate": 56,
+    "ETH-USDT:htx": 20,
+    "ETH-USDT:kucoin": 41,
+    "ETH-USDT:mexc": 40
+  },
+  "event_table_description": "Derived from the pinned source inputs by the supplied extraction rule.",
+  "extraction_rule": {
+    "training_observations": 540,
+    "future_observations": 21,
+    "absolute_funding_percentile": 0.95,
+    "threshold_tolerance": 1e-18,
+    "cooldown_observations": 21,
+    "minimum_event_index_spacing": 22,
+    "settlement_hours": 8,
+    "settlement_tolerance_minutes": 5,
+    "fit": "nonintercept AR(1) on 539 adjacent pairs in the preceding 540 observations",
+    "residual_sigma_ddof": 1,
+    "historical_sigma_ddof": 1,
+    "Icrit": 4.281923675333987
+  },
+  "software": {
+    "python": "3.11.16",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "scipy": "1.17.1"
+  },
+  "statistics": {
+    "n": 543,
+    "spearman_lifetime_future": 0.47407476016841166,
+    "spearman_edge_future": 0.3832597881990353,
+    "spearman_t_future": 0.3605614700378723,
+    "spearman_lifetime_edge": 0.7711797778894812,
+    "incremental_lifetime_given_edge": 0.27773784592625855,
+    "incremental_lifetime_given_edge_and_t": 0.12263890554002561,
+    "top_quintile_lifetime": {
+      "n": 109,
+      "positive_count": 100,
+      "positive_share": 0.9174311926605505,
+      "mean_sign_survival": 16.81651376146789
+    },
+    "top_quintile_edge": {
+      "n": 109,
+      "positive_count": 93,
+      "positive_share": 0.8532110091743119,
+      "mean_sign_survival": 14.972477064220184
+    }
+  },
+  "ar1_comparators": {
+    "ar1_raw_cumulative_21": {
+      "n": 543,
+      "spearman_lifetime_score": 0.9222266531348322
+    },
+    "ar1_cumulative_forecast_snr": {
+      "n": 543,
+      "spearman_lifetime_score": 0.9951611736029686
+    },
+    "ar1_finite_geometric_information_proxy": {
+      "n": 543,
+      "spearman_lifetime_score": 0.9872256302273636
+    }
+  },
+  "ar1_formulas": {
+    "ar1_raw_cumulative_21": "abs(f_t) * sum_{k=1}^{21} phi_hat^k",
+    "ar1_cumulative_forecast_snr": "raw_forecast / (sigma_hat_eps * sqrt(sum_{j=1}^{21} (sum_{r=0}^{21-j} phi_hat^r)^2))",
+    "ar1_finite_geometric_information_proxy": "f_t^2/(2 sigma_hat_eps^2) * sum_{k=1}^{21} phi_hat^(2k)",
+    "geometric_proxy_scope": "Squared deterministic mean forecasts scaled by innovation variance; not exact joint-path KL for a stochastic AR(1)."
+  },
+  "leave_one_series_incremental_range": [
+    0.24885316247724573,
+    0.304911136673175
+  ],
+  "calendar_month_cluster_bootstrap": {
+    "resamples": 5000,
+    "seed": 1729,
+    "ci95": {
+      "lifetime": [
+        0.2830811405346187,
+        0.6174280811936684
+      ],
+      "edge": [
+        0.16545720203481457,
+        0.5471012409369325
+      ],
+      "t_stat": [
+        0.1773025619409058,
+        0.5211645212719885
+      ],
+      "incremental": [
+        0.12279556411266397,
+        0.40614013266573834
+      ]
+    }
+  },
+  "event_table_sha256": "a5ff7c458dd80c3189549f2d676f3731ab3994a7df0d7271082f5cba02d2f795"
+}

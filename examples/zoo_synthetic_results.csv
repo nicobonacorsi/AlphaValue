@@ -1,0 +1,4 @@
+name,n_observations,trading_cost,decision,efficiency_decision,certified_eta_efficient,relative_regret_upper,policy_value_lower,oracle_value_upper,theta_lower,theta_upper,phi_lower,phi_upper,canonical_1pct_history_floor,additional_periods_to_floor,floor_comparison
+persistent_strong,1000,2.5,deploy_in_model,not_certified,False,0.37191001115478955,0.07826618281767636,1.217029128055512,0.3067466161343059,0.5460069273706323,0.6288668506907168,0.8495108554350906,45,0,at_or_above_floor_not_sufficient
+shorter_small,1000,1.3,insufficient_evidence,not_certified,False,,0.0,0.14243019474377994,-0.09973249578748049,0.2632764769076498,0.19103007012182377,0.4676944245919276,45,0,at_or_above_floor_not_sufficient
+persistent_uncertain,1000,3.5,insufficient_evidence,not_certified,False,,0.0,0.5375657124209107,-0.019533808858888363,0.27235864478457583,0.6119990292772719,0.8208767981876322,45,0,at_or_above_floor_not_sufficient
