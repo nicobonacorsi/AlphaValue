@@ -70,39 +70,36 @@ def universe():
     return ans
 
 def funding_history(sym):
-    rows={}; periods={}; calls=0
-
-    def ingest(lo,hi,depth=0):
-        nonlocal calls
-        if depth>10: raise RuntimeError("FUNDING_SPLIT_DEPTH")
-        obj=getj("/api/v1/futures/historyFundingRate",{
-            "symbol":sym,"startTime":int(lo.timestamp()*1000),"endTime":int(hi.timestamp()*1000)-1,"limit":1000})
-        calls+=1
-        xs=arr(obj)
-        # Hitting the documented cap means the time slice is not provably complete.
-        # Split deterministically by wall-clock time; never infer or drop records.
-        if len(xs)>=1000:
-            if hi-lo<=timedelta(days=2): raise RuntimeError("FUNDING_DENSE_SLICE")
-            mid=lo+(hi-lo)/2
-            ingest(lo,mid,depth+1); ingest(mid,hi,depth+1); return
+    by_time={}; periods={}; calls=0
+    cursor=None; pages=0; previous_earliest=None
+    while pages<12:
+        params={"symbol":sym,"limit":1000}
+        if cursor is not None: params["fromId"]=cursor
+        xs=arr(getj("/api/v1/futures/historyFundingRate",params)); calls+=1; pages+=1
+        page=[]
         for r in xs:
             if not isinstance(r,dict) or str(r.get("symbol"))!=sym: continue
-            t=int(r["settleTime"]); rate=Decimal(str(r["settleRate"])); period=str(r.get("period") or "")
-            if not rate.is_finite() or not PRE_MS<=t<END_MS: continue
-            periods[period or "UNKNOWN"]=periods.get(period or "UNKNOWN",0)+1
-            # Primary V3 population is native-stable-8h only. Non-8h rows are audited,
-            # not converted, and therefore break 8h continuity automatically.
-            if period and period!="8H": continue
-            old=rows.get(t)
+            rid=int(r["id"]); t=int(r["settleTime"]); rate=Decimal(str(r["settleRate"])); period=str(r.get("period") or "")
+            if not rate.is_finite(): raise RuntimeError("FUNDING_RATE")
+            page.append((rid,t,rate,period or "UNKNOWN"))
+        if not page: break
+        page.sort(key=lambda x:x[1])
+        earliest=page[0][1]; latest=page[-1][1]
+        if previous_earliest is not None and latest>=previous_earliest:
+            raise RuntimeError("FUNDING_CURSOR_NOT_STRICTLY_OLDER")
+        for rid,t,rate,period in page:
+            periods[period]=periods.get(period,0)+1
+            if not PRE_MS<=t<END_MS: continue
+            if period!="8H": continue
+            old=by_time.get(t)
             if old is not None and old!=rate: raise RuntimeError("FUNDING_CONFLICT")
-            rows[t]=rate
-
-    cur=PRE
-    while cur<END:
-        nxt=min(cur+timedelta(days=180),END)
-        ingest(cur,nxt)
-        cur=nxt
-    xs=sorted(rows.items())
+            by_time[t]=rate
+        if earliest<=PRE_MS: break
+        min_id=min(x[0] for x in page)
+        if min_id<=0: break
+        cursor=min_id-1
+        previous_earliest=earliest
+    xs=sorted(by_time.items())
     return xs,calls,periods
 
 def q95(vals):
