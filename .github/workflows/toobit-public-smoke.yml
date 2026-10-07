@@ -1,0 +1,84 @@
+name: Toobit public market-data smoke
+
+on:
+  push:
+    branches: [toobit-public-fetch-20261007]
+    paths:
+      - .github/workflows/toobit-public-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe five old public markets
+        run: |
+          python - <<'PY'
+          import json,time,urllib.parse,urllib.request
+          from datetime import datetime,timezone
+          API='https://api.toobit.com'
+          ROOTS=['SOL','XRP','ADA','LINK','LTC']
+          START=int(datetime(2026,8,1,tzinfo=timezone.utc).timestamp()*1000)
+          END=START+24*3600*1000
+          H=3600*1000
+          def get(path,p=None):
+              u=API+path+('?' + urllib.parse.urlencode(p or {}) if p else '')
+              with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'Toobit-public-smoke/1.0'}),timeout=30) as r:
+                  return json.loads(r.read()),u
+          def arr(o):
+              if isinstance(o,list): return o
+              if isinstance(o,dict):
+                  for k in ('data','list','rows'):
+                      if isinstance(o.get(k),list): return o[k]
+              return []
+          exp=set(range(START,END,H))
+          out=[]
+          for root in ROOTS:
+              perp=root+'-SWAP-USDT';spot=root+'USDT'
+              rec={'root':root,'perp':perp,'spot':spot}
+              try:
+                  f,fu=get('/api/v1/futures/historyFundingRate',{'symbol':perp,'limit':1000})
+                  fr=[r for r in arr(f) if isinstance(r,dict) and str(r.get('symbol'))==perp]
+                  ids=[int(r['id']) for r in fr if r.get('id') is not None]
+                  ts=sorted(int(r['settleTime']) for r in fr if r.get('settleTime') is not None)
+                  rec['funding_first_page']={'rows':len(fr),'periods':sorted({str(r.get('period') or '') for r in fr}),
+                    'first_ms':ts[0] if ts else None,'last_ms':ts[-1] if ts else None,'min_id':min(ids) if ids else None,'max_id':max(ids) if ids else None,'url':fu}
+                  if ids and ts:
+                      cand=[]
+                      for m in ('endId','fromId'):
+                          try:
+                              q,u=get('/api/v1/futures/historyFundingRate',{'symbol':perp,m:min(ids)-1,'limit':1000})
+                              rr=[r for r in arr(q) if isinstance(r,dict) and str(r.get('symbol'))==perp]
+                              t2=sorted(int(r['settleTime']) for r in rr if r.get('settleTime') is not None)
+                              cand.append({'mode':m,'rows':len(rr),'older':sum(t<ts[0] for t in t2),'first_ms':t2[0] if t2 else None,'last_ms':t2[-1] if t2 else None,'url':u})
+                          except Exception as e: cand.append({'mode':m,'error':type(e).__name__+':'+str(e)[:100]})
+                      rec['pagination_probe']=cand
+                  s,su=get('/quote/v1/klines',{'symbol':spot,'interval':'1h','startTime':START,'endTime':END-1,'limit':1000})
+                  p,pu=get('/quote/v1/klines',{'symbol':perp,'interval':'1h','startTime':START,'endTime':END-1,'limit':1000})
+                  m,mu=get('/quote/v1/markPrice/klines',{'symbol':perp,'interval':'1h','from':START,'to':END-1,'limit':2000})
+                  st={int(r[0]) for r in arr(s) if isinstance(r,(list,tuple)) and len(r)>=5}
+                  pt={int(r[0]) for r in arr(p) if isinstance(r,(list,tuple)) and len(r)>=5}
+                  mt={int(r['time']) for r in arr(m) if isinstance(r,dict) and r.get('time') is not None}
+                  rec['price_probe']={'spot_rows':len(st),'perp_rows':len(pt),'mark_rows':len(mt),
+                    'spot_exact':st==exp,'perp_exact':pt==exp,'mark_exact':mt==exp,
+                    'spot_missing':len(exp-st),'perp_missing':len(exp-pt),'mark_missing':len(exp-mt),
+                    'spot_url':su,'perp_url':pu,'mark_url':mu}
+                  rec['status']='COMPLETE'
+              except Exception as e:
+                  rec.update(status='ERROR',error_type=type(e).__name__,error=str(e)[:300])
+              out.append(rec)
+              print('TOOBIT_SMOKE:'+json.dumps(rec,sort_keys=True),flush=True)
+              time.sleep(.3)
+          print('TOOBIT_SMOKE_FINAL:'+json.dumps(out,sort_keys=True),flush=True)
+          open('toobit_smoke.json','w').write(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: toobit-public-smoke
+          path: toobit_smoke.json
+          retention-days: 1
