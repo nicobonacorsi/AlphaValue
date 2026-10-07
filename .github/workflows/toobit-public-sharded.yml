@@ -1,0 +1,34 @@
+name: Toobit public sharded fetch
+
+on:
+  push:
+    branches: [toobit-public-fetch-20261007]
+    paths:
+      - .github/workflows/toobit-public-sharded.yml
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        shard: [0,1,2,3,4,5,6,7]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SHARD: ${{ matrix.shard }}
+      SHARDS: "8"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch assigned public Toobit data
+        run: python tools/toobit_public_shard.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: toobit-public-shard-${{ matrix.shard }}
+          path: out/
+          if-no-files-found: error
+          retention-days: 1
