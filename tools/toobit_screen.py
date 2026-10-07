@@ -222,3 +222,5 @@ def main():
     print("TOOBIT_SCREEN_FINAL:"+json.dumps(summary,sort_keys=True),flush=True)
 
 if __name__=="__main__": main()
+
+# trigger after workflow registration
