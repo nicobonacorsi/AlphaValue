@@ -1,0 +1,64 @@
+name: Toobit mark semantics probe
+
+on:
+  push:
+    branches: [toobit-public-fetch-20261007]
+    paths:
+      - .github/workflows/toobit-mark-semantics.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe mark kline semantics
+        run: |
+          python - <<'PY'
+          import json,urllib.parse,urllib.request
+          from datetime import datetime,timezone
+          API='https://api.toobit.com'
+          S='SOL-SWAP-USDT'
+          lo=int(datetime(2026,8,1,tzinfo=timezone.utc).timestamp()*1000)
+          hi=lo+24*3600*1000
+          def get(params):
+              u=API+'/quote/v1/markPrice/klines?'+urllib.parse.urlencode(params)
+              with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'Toobit-mark-semantics/1'}),timeout=30) as r:
+                  o=json.loads(r.read())
+              rows=o.get('data') if isinstance(o,dict) else o
+              return rows,u
+          out=[]
+          tests=[
+            ('ms',{'symbol':S,'interval':'1h','from':lo,'to':hi-1,'limit':2000}),
+            ('sec',{'symbol':S,'interval':'1h','from':lo//1000,'to':(hi-1)//1000,'limit':2000}),
+            ('ms_24limit',{'symbol':S,'interval':'1h','from':lo,'to':hi-1,'limit':24})
+          ]
+          expected=set(range(lo,hi,3600*1000))
+          for label,p in tests:
+              try:
+                  rows,u=get(p)
+                  if not isinstance(rows,list): raise RuntimeError('ROWS')
+                  recs=[]
+                  for r in rows:
+                      if not isinstance(r,dict) or r.get('time') is None: continue
+                      recs.append((int(r['time']),str(r.get('klineType')),str(r.get('open')),str(r.get('close'))))
+                  ts=[x[0] for x in recs]
+                  z={'label':label,'url':u,'rows':len(recs),'types':sorted(set(x[1] for x in recs)),
+                     'min_ms':min(ts) if ts else None,'max_ms':max(ts) if ts else None,
+                     'expected_present':len(expected & set(ts)),'missing_expected':len(expected-set(ts)),
+                     'extra':len(set(ts)-expected),'first5':recs[:5],'last5':recs[-5:]}
+                  out.append(z);print('TOOBIT_MARK_SEMANTICS:'+json.dumps(z,sort_keys=True),flush=True)
+              except Exception as e:
+                  z={'label':label,'error_type':type(e).__name__,'error':str(e)[:300]}
+                  out.append(z);print('TOOBIT_MARK_SEMANTICS:'+json.dumps(z,sort_keys=True),flush=True)
+          open('toobit_mark_semantics.json','w').write(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: toobit-mark-semantics
+          path: toobit_mark_semantics.json
+          retention-days: 1
