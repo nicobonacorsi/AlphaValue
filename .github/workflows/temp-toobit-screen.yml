@@ -1,0 +1,27 @@
+name: Temporary Toobit Outcome-Blind Screen
+
+on:
+  push:
+    branches: [temp-toobit-screen-20261007]
+    paths:
+      - tools/toobit_screen.py
+      - .github/workflows/temp-toobit-screen.yml
+
+permissions:
+  contents: read
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run public Toobit transport and funding-only screen
+        run: python tools/toobit_screen.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: toobit-outcome-blind-screen
+          path: toobit_screen/
+          if-no-files-found: error
+          retention-days: 1
