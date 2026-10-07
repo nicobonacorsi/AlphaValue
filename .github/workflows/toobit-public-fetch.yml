@@ -1,0 +1,205 @@
+name: Toobit public market-data fetch
+
+on:
+  push:
+    branches: [toobit-public-fetch-20261007]
+    paths:
+      - .github/workflows/toobit-public-fetch.yml
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch public Toobit market data
+        run: |
+          cat > /tmp/fetch_toobit.py <<'PY'
+          from __future__ import annotations
+          import json,time,urllib.error,urllib.parse,urllib.request
+          from pathlib import Path
+          from datetime import datetime,timezone
+
+          API='https://api.toobit.com'
+          UA={'User-Agent':'Toobit-public-marketdata-research/1.0'}
+          PRE=int(datetime(2023,6,1,tzinfo=timezone.utc).timestamp()*1000)
+          END=int(datetime(2026,8,31,tzinfo=timezone.utc).timestamp()*1000)
+          PROBE_START=int(datetime(2026,8,1,tzinfo=timezone.utc).timestamp()*1000)
+          PROBE_END=PROBE_START+24*3600*1000
+          HOUR=3600*1000
+          times=[]
+
+          def throttle(n=4):
+              while True:
+                  now=time.monotonic()
+                  while times and now-times[0]>=1: times.pop(0)
+                  if len(times)<n:
+                      times.append(now); return
+                  time.sleep(max(.02,1-(now-times[0])+.01))
+
+          def getj(path,params=None,retries=6):
+              q=urllib.parse.urlencode(params or {})
+              url=API+path+('?' + q if q else '')
+              last=None
+              for k in range(retries):
+                  try:
+                      throttle()
+                      req=urllib.request.Request(url,headers=UA)
+                      with urllib.request.urlopen(req,timeout=35) as r:
+                          b=r.read(20*1024*1024+1)
+                      if len(b)>20*1024*1024: raise RuntimeError('BODY_TOO_LARGE')
+                      return json.loads(b),url
+                  except urllib.error.HTTPError as e:
+                      last=e
+                      if e.code not in (408,429,500,502,503,504): break
+                  except Exception as e: last=e
+                  time.sleep(min(8,.7*(k+1)))
+              raise last if last else RuntimeError('TRANSPORT')
+
+          def array(obj):
+              if isinstance(obj,list): return obj
+              if isinstance(obj,dict):
+                  for k in ('data','list','rows'):
+                      if isinstance(obj.get(k),list): return obj[k]
+              raise ValueError('ARRAY_SCHEMA')
+
+          def universe():
+              o,u=getj('/api/v1/exchangeInfo')
+              spots=o.get('symbols') or []
+              contracts=o.get('contracts') or []
+              spotset={str(x.get('symbol')) for x in spots
+                       if str(x.get('status','')).upper()=='TRADING'
+                       and str(x.get('quoteAsset','')).upper()=='USDT'}
+              out=[]
+              for x in contracts:
+                  if str(x.get('status','')).upper()!='TRADING': continue
+                  if bool(x.get('inverse',False)): continue
+                  if str(x.get('quoteAsset','')).upper()!='USDT': continue
+                  if str(x.get('marginToken','')).upper()!='USDT': continue
+                  perp=str(x.get('symbol') or '')
+                  suffix='-SWAP-USDT'
+                  if not perp.endswith(suffix): continue
+                  root=perp[:-len(suffix)]
+                  spot=root+'USDT'
+                  if not root or spot not in spotset: continue
+                  out.append({'root':root,'spot_symbol':spot,'perp_symbol':perp})
+              best={}
+              for r in sorted(out,key=lambda z:(z['root'],z['perp_symbol'])): best.setdefault(r['root'],r)
+              return list(best.values()),{'exchange_info_url':u,'spot_trading':len(spotset),'contracts_total':len(contracts)}
+
+          def parse_funding(obj,symbol):
+              rows=[]
+              for r in array(obj):
+                  if not isinstance(r,dict) or str(r.get('symbol'))!=symbol: continue
+                  try:
+                      rid=int(r['id']); t=int(r['settleTime']); rate=str(r['settleRate']); period=str(r.get('period') or '')
+                  except Exception: continue
+                  if 10**12<=t<10**14: rows.append({'id':rid,'settleTime':t,'settleRate':rate,'period':period})
+              by={}
+              for r in rows: by[r['id']]=r
+              return sorted(by.values(),key=lambda r:r['settleTime'])
+
+          def funding_history(symbol):
+              obj,url=getj('/api/v1/futures/historyFundingRate',{'symbol':symbol,'limit':1000})
+              first=parse_funding(obj,symbol)
+              if not first: return [],{'status':'EMPTY','pages':1,'pagination_mode':None,'urls':[url]}
+              byid={r['id']:r for r in first}; urls=[url]; mode=None; pages=1
+              while min(r['settleTime'] for r in byid.values())>PRE and pages<12:
+                  earliest=min(r['settleTime'] for r in byid.values())
+                  cursor=min(byid)-1
+                  candidates=[]
+                  for m in ('endId','fromId') if mode is None else (mode,):
+                      try:
+                          oo,uu=getj('/api/v1/futures/historyFundingRate',{'symbol':symbol,m:cursor,'limit':1000})
+                          rr=parse_funding(oo,symbol)
+                          older=[r for r in rr if r['settleTime']<earliest]
+                          if older: candidates.append((min(r['settleTime'] for r in rr),-len(older),m,rr,uu))
+                      except Exception: pass
+                  if not candidates: break
+                  candidates.sort(key=lambda z:(z[0],z[1],z[2]))
+                  _,_,chosen,rr,uu=candidates[0]
+                  if mode is None: mode=chosen
+                  elif mode!=chosen: raise RuntimeError('PAGINATION_MODE_FLIP')
+                  before=len(byid)
+                  for r in rr: byid[r['id']]=r
+                  urls.append(uu);pages+=1
+                  if len(byid)==before: break
+              rows=sorted((r for r in byid.values() if PRE<=r['settleTime']<END),key=lambda r:r['settleTime'])
+              ts=[r['settleTime'] for r in rows]
+              periods=sorted({r['period'] for r in rows if r['period']})
+              longest=cur=1 if ts else 0
+              for a,b in zip(ts,ts[1:]):
+                  if b-a==8*HOUR: cur+=1
+                  else: longest=max(longest,cur);cur=1
+              longest=max(longest,cur)
+              return rows,{'status':'OK','pages':pages,'pagination_mode':mode or 'single_page','records':len(rows),
+                           'first_ms':ts[0] if ts else None,'last_ms':ts[-1] if ts else None,
+                           'periods':periods,'longest_consecutive_8h_records':longest,'urls':urls}
+
+          def regular_times(symbol):
+              obj,u=getj('/quote/v1/klines',{'symbol':symbol,'interval':'1h','startTime':PROBE_START,'endTime':PROBE_END-1,'limit':1000})
+              ts=[]
+              for r in array(obj):
+                  if isinstance(r,(list,tuple)) and len(r)>=5:
+                      try: ts.append(int(r[0]))
+                      except Exception: pass
+              return sorted(set(ts)),u
+
+          def mark_times(symbol):
+              obj,u=getj('/quote/v1/markPrice/klines',{'symbol':symbol,'interval':'1h','from':PROBE_START,'to':PROBE_END-1,'limit':2000})
+              ts=[]
+              for r in array(obj):
+                  if isinstance(r,dict):
+                      try: ts.append(int(r['time']))
+                      except Exception: pass
+              return sorted(set(ts)),u
+
+          out=Path('toobit_public_data');out.mkdir()
+          funding_dir=out/'funding';funding_dir.mkdir()
+          uni,umeta=universe()
+          (out/'universe.json').write_text(json.dumps(uni,indent=2)+'\n')
+          reports=[]
+          expected=set(range(PROBE_START,PROBE_END,HOUR))
+          for i,r in enumerate(uni,1):
+              rec=dict(r);rec['status']='STARTED'
+              try:
+                  rows,fm=funding_history(r['perp_symbol'])
+                  (funding_dir/(r['root']+'.json')).write_text(json.dumps(rows,separators=(',',':'))+'\n')
+                  s,su=regular_times(r['spot_symbol']);p,pu=regular_times(r['perp_symbol']);m,mu=mark_times(r['perp_symbol'])
+                  rec.update(status='COMPLETE',funding=fm,
+                    price_probe={'spot_rows':len(s),'perp_rows':len(p),'mark_rows':len(m),
+                                 'spot_exact_24h':set(s)==expected,'perp_exact_24h':set(p)==expected,'mark_exact_24h':set(m)==expected,
+                                 'spot_missing':len(expected-set(s)),'perp_missing':len(expected-set(p)),'mark_missing':len(expected-set(m)),
+                                 'spot_url':su,'perp_url':pu,'mark_url':mu})
+              except Exception as e:
+                  rec.update(status='ERROR',error_type=type(e).__name__,error=str(e)[:300])
+              reports.append(rec)
+              print('TOOBIT_PUBLIC_PROGRESS:'+json.dumps({'i':i,'n':len(uni),'root':r['root'],'status':rec['status'],
+                    'funding_records':(rec.get('funding') or {}).get('records'),
+                    'longest_8h':(rec.get('funding') or {}).get('longest_consecutive_8h_records'),
+                    'price_probe':rec.get('price_probe')},sort_keys=True),flush=True)
+          eligible=[r for r in reports if r.get('status')=='COMPLETE'
+                    and (r.get('funding') or {}).get('longest_consecutive_8h_records',0)>=540
+                    and (r.get('price_probe') or {}).get('spot_exact_24h') is True
+                    and (r.get('price_probe') or {}).get('perp_exact_24h') is True
+                    and (r.get('price_probe') or {}).get('mark_exact_24h') is True]
+          summary={'schema_version':1,'source':'Toobit public API','public_data_only':True,
+                   'universe_count':len(uni),'exchange_meta':umeta,'complete_reports':sum(r.get('status')=='COMPLETE' for r in reports),
+                   'errors':sum(r.get('status')=='ERROR' for r in reports),'transport_depth_eligible':len(eligible),
+                   'eligible_roots':[r['root'] for r in eligible],
+                   'probe_window_utc':'2026-08-01T00:00:00Z/2026-08-02T00:00:00Z'}
+          (out/'reports.json').write_text(json.dumps(reports,indent=2,sort_keys=True)+'\n')
+          (out/'summary.json').write_text(json.dumps(summary,indent=2,sort_keys=True)+'\n')
+          print('TOOBIT_PUBLIC_FINAL:'+json.dumps(summary,sort_keys=True),flush=True)
+          PY
+          python /tmp/fetch_toobit.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: toobit-public-marketdata
+          path: toobit_public_data/
+          if-no-files-found: error
+          retention-days: 1
