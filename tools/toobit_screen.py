@@ -70,27 +70,40 @@ def universe():
     return ans
 
 def funding_history(sym):
-    rows={}
-    cur=PRE
-    calls=0
-    while cur<END:
-        nxt=min(cur+timedelta(days=300),END)
+    rows={}; periods={}; calls=0
+
+    def ingest(lo,hi,depth=0):
+        nonlocal calls
+        if depth>10: raise RuntimeError("FUNDING_SPLIT_DEPTH")
         obj=getj("/api/v1/futures/historyFundingRate",{
-            "symbol":sym,"startTime":int(cur.timestamp()*1000),"endTime":int(nxt.timestamp()*1000)-1,"limit":1000})
+            "symbol":sym,"startTime":int(lo.timestamp()*1000),"endTime":int(hi.timestamp()*1000)-1,"limit":1000})
         calls+=1
         xs=arr(obj)
-        if len(xs)>=1000: raise RuntimeError("FUNDING_CHUNK_TRUNCATED")
+        # Hitting the documented cap means the time slice is not provably complete.
+        # Split deterministically by wall-clock time; never infer or drop records.
+        if len(xs)>=1000:
+            if hi-lo<=timedelta(days=2): raise RuntimeError("FUNDING_DENSE_SLICE")
+            mid=lo+(hi-lo)/2
+            ingest(lo,mid,depth+1); ingest(mid,hi,depth+1); return
         for r in xs:
             if not isinstance(r,dict) or str(r.get("symbol"))!=sym: continue
-            t=int(r["settleTime"]); rate=Decimal(str(r["settleRate"])); period=str(r.get("period") or "8H")
-            if period!="8H": raise RuntimeError("NON_NATIVE_8H:"+period)
+            t=int(r["settleTime"]); rate=Decimal(str(r["settleRate"])); period=str(r.get("period") or "")
             if not rate.is_finite() or not PRE_MS<=t<END_MS: continue
+            periods[period or "UNKNOWN"]=periods.get(period or "UNKNOWN",0)+1
+            # Primary V3 population is native-stable-8h only. Non-8h rows are audited,
+            # not converted, and therefore break 8h continuity automatically.
+            if period and period!="8H": continue
             old=rows.get(t)
             if old is not None and old!=rate: raise RuntimeError("FUNDING_CONFLICT")
             rows[t]=rate
+
+    cur=PRE
+    while cur<END:
+        nxt=min(cur+timedelta(days=180),END)
+        ingest(cur,nxt)
         cur=nxt
     xs=sorted(rows.items())
-    return xs,calls
+    return xs,calls,periods
 
 def q95(vals):
     pos=Decimal(len(vals)-1)*Decimal("0.95")
@@ -156,9 +169,9 @@ def mark_times(sym,start,end):
 def audit(z):
     rec=dict(z)
     try:
-        xs,calls=funding_history(z["perp"])
+        xs,calls,periods=funding_history(z["perp"])
         b=scan_births(xs)
-        rec.update(status="COMPLETE",funding_calls=calls,**b)
+        rec.update(status="COMPLETE",funding_calls=calls,funding_period_counts=periods,**b)
         rec["funding_depth_pass"]=bool(b["records"]>=HIST and b["longest_8h"]>=HIST)
         if rec["funding_depth_pass"]:
             anchor=min(END_MS-24*HOUR,max(START_MS,(xs[-1][0]-7*86400000)//(24*HOUR)*(24*HOUR)))
@@ -223,4 +236,3 @@ def main():
 
 if __name__=="__main__": main()
 
-# trigger after workflow registration
